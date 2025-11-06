@@ -24,7 +24,7 @@ const Payment = () => {
   const [error, setError] = useState(null);
   const [debugLogs, setDebugLogs] = useState([]);
   const [showDebugLogs, setShowDebugLogs] = useState(true);
-  const { userData, getAuthToken } = useUserAuth();
+  const { getCompleteUserData, userData, getAuthToken } = useUserAuth();
 
   // Debug logging function that adds logs to state (visible in SuperApp UI)
   const addDebugLog = useCallback((type, message, data = null) => {
@@ -44,41 +44,16 @@ const Payment = () => {
     });
   }, []);
 
-  // Hide SuperApp header and log bridge availability
+  // Log SuperApp bridge availability for debugging
   useEffect(() => {
     addDebugLog('info', '🔍 Checking SuperApp bridge availability...');
     
     if (window.payment) {
       addDebugLog('success', '✅ window.payment is available');
       addDebugLog('data', '📋 Available methods', Object.keys(window.payment));
-      
-      if (typeof window.payment.setHeader === 'function') {
-        try {
-          window.payment.setHeader({ visible: false });
-          addDebugLog('success', '✅ SuperApp header hidden');
-        } catch (error) {
-          addDebugLog('error', '❌ Failed to hide header', {
-            message: error?.message,
-            name: error?.name
-          });
-        }
-      } else {
-        addDebugLog('warning', '⚠️ window.payment.setHeader is not available');
-      }
     } else {
       addDebugLog('error', '❌ window.payment is not available - not running in SuperApp');
     }
-    
-    // Cleanup: Show header again when component unmounts
-    return () => {
-      if (window.payment && typeof window.payment.setHeader === 'function') {
-        try {
-          window.payment.setHeader({ visible: true });
-        } catch (error) {
-          // Silently fail if setHeader is not available or fails
-        }
-      }
-    };
   }, [addDebugLog]);
 
   // Redirect if no required data
@@ -131,37 +106,50 @@ const Payment = () => {
       };
 
       // Get user info if available (optional - will use defaults if not available)
+      // Using the recommended approach from SUPERAPP_USERINFO_AND_CASHIER_GUIDE.md
       let userInfo = null;
       try {
-        addDebugLog('info', '🔍 Attempting to get user info...');
-        // Try to get auth token and user data if available
-        if (window.payment && typeof window.payment.getAuthToken === 'function') {
-          addDebugLog('info', '✅ window.payment.getAuthToken is available');
-          const authToken = await getAuthToken();
-          addDebugLog('success', '✅ Auth token retrieved');
-          // If we have userData from useUserAuth, use it
-          if (userData) {
-            userInfo = {
-              CustomerId: userData.openId || userData.CustomerId || '1L',
-              Fullname: userData.userInfo?.msisdn || userData.Fullname || '1L',
-              MobileNumber: userData.phoneNumber || userData.userInfo?.msisdn || userData.MobileNumber || '+263777077921',
-              EmailAddress: userData.EmailAddress || null,
-              authToken: authToken,
-              openId: userData.openId
-            };
-            addDebugLog('data', '👤 User info prepared', userInfo);
-          } else {
-            addDebugLog('warning', '⚠️ No userData available, using defaults');
-          }
+        addDebugLog('info', '🔍 Attempting to get user info using getCompleteUserData...');
+        
+        // Use getCompleteUserData from useUserAuth hook (recommended method)
+        const userDataResult = await getCompleteUserData();
+        
+        if (userDataResult?.userInfo) {
+          addDebugLog('success', '✅ User info retrieved successfully');
+          addDebugLog('data', '👤 User info structure', {
+            msisdn: userDataResult.userInfo.msisdn,
+            phoneNumber: userDataResult.phoneNumber,
+            openId: userDataResult.openId,
+            hasAuthToken: !!userDataResult.authToken
+          });
+          
+          // Format userInfo for PostPayment API (if needed)
+          userInfo = {
+            CustomerId: userDataResult.openId || userDataResult.userInfo?.userId || userDataResult.userInfo?.id || '1L',
+            Fullname: userDataResult.userInfo?.name || userDataResult.userInfo?.fullName || userDataResult.userInfo?.displayName || '1L',
+            MobileNumber: userDataResult.phoneNumber || userDataResult.userInfo?.msisdn || userDataResult.userInfo?.phoneNumber || userDataResult.userInfo?.phone || '+263777077921',
+            EmailAddress: userDataResult.userInfo?.email || userDataResult.userInfo?.emailAddress || null,
+            authToken: userDataResult.authToken,
+            openId: userDataResult.openId,
+            // Include full userInfo for reference
+            userInfo: userDataResult.userInfo
+          };
+          addDebugLog('data', '👤 Formatted user info for PostPayment', userInfo);
         } else {
-          addDebugLog('warning', '⚠️ window.payment.getAuthToken not available');
+          addDebugLog('warning', '⚠️ No userInfo in result, using defaults');
         }
       } catch (userInfoError) {
         addDebugLog('error', '❌ Failed to get user info', {
           message: userInfoError?.message,
           name: userInfoError?.name,
-          stack: userInfoError?.stack
+          stack: userInfoError?.stack,
+          errorType: userInfoError?.code || 'UNKNOWN'
         });
+        
+        // Check if it's a "No token found in URL" error (expected in browser testing)
+        if (userInfoError?.message?.includes('No token found in URL')) {
+          addDebugLog('info', 'ℹ️ No SuperApp token in URL - this is expected in browser testing');
+        }
         // User info is optional - continue with defaults
       }
       

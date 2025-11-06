@@ -9,13 +9,21 @@ import Confirmation from './pages/Confirmation';
 
 function App() {
   // Hide SuperApp header for the entire app (user will use their own navigation)
+  // Using the same approach as the airtime app: hasTitleBar: false
   useEffect(() => {
     if (window.payment && typeof window.payment.setHeader === 'function') {
-      try {
-        window.payment.setHeader({ visible: false });
-      } catch (error) {
-        // Silently fail if setHeader is not available or fails
-      }
+      const setHeaderRequest = {
+        hasTitleBar: false
+      };
+      
+      window.payment
+        .setHeader(setHeaderRequest)
+        .then(res => {
+          console.log('Header set successfully', res);
+        })
+        .catch(error => {
+          console.error('Failed to set header', error);
+        });
     }
     // Don't restore header on unmount - keep it hidden for the entire app
   }, []);
