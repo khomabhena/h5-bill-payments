@@ -5,9 +5,10 @@
 export class UserService {
   constructor(config = {}) {
     this.baseUrl = config.baseUrl || 'https://appleseed-uat-portal.joypaydev.com';
-    this.appId = config.appId || 'AX35182510130000001000103500';
-    this.serialNo = config.serialNo || 'HUbbFjH2VZ';
-    this.appSecretKey = config.appSecretKey || '4tmvsbJaVBQPFxsum+c3lA==';
+    // Bill Payments App Credentials
+    this.appId = config.appId || 'AE35182511050000001000105000';
+    this.serialNo = config.serialNo || 'p6TTL7DWcA';
+    this.appSecretKey = config.appSecretKey || 'MoTtljN1P66E2rZ/sDwj3g==';
   }
 
   /**

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CountryServiceSelection from './pages/CountryServiceSelection';
 import ProviderSelection from './pages/ProviderSelection';
@@ -8,6 +8,18 @@ import Payment from './pages/Payment';
 import Confirmation from './pages/Confirmation';
 
 function App() {
+  // Hide SuperApp header for the entire app (user will use their own navigation)
+  useEffect(() => {
+    if (window.payment && typeof window.payment.setHeader === 'function') {
+      try {
+        window.payment.setHeader({ visible: false });
+      } catch (error) {
+        // Silently fail if setHeader is not available or fails
+      }
+    }
+    // Don't restore header on unmount - keep it hidden for the entire app
+  }, []);
+
   return (
     <Router>
       <Routes>

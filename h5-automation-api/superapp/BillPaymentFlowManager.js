@@ -153,7 +153,7 @@ class BillPaymentFlowManager {
     const orderData = {
       // Core payment fields
       mchId: 'MG3518zo1Wd0XlXZzn', // Merchant ID
-      appId: 'AX35182510130000001000103500', // App ID
+      appId: 'AE35182511050000001000105000', // Bill Payments App ID
       amountCent: amountCent, // JSAPI expects amountCent
       currency: currency,
       description: `Bill payment - ${product?.Name || 'Bill'} for account ${accountValue || 'N/A'}`,
