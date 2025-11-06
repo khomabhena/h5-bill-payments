@@ -1,0 +1,811 @@
+{
+	"info": {
+		"_postman_id": "9c3f0db5-a70c-4269-802c-1044cef4468e",
+		"name": "H5 Bill Payments",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15410888"
+	},
+	"item": [
+		{
+			"name": "getCountries",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "MerchantId",
+						"value": "23de4621-ea24-433f-9b45-dc1e383d8c2b",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://sandbox-dev.appletreepayments.com/vas/V2/Countries",
+					"protocol": "https",
+					"host": [
+						"sandbox-dev",
+						"appletreepayments",
+						"com"
+					],
+					"path": [
+						"vas",
+						"V2",
+						"Countries"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "getCountries",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "MerchantId",
+								"value": "23de4621-ea24-433f-9b45-dc1e383d8c2b",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://sandbox-dev.appletreepayments.com/vas/V2/Countries",
+							"protocol": "https",
+							"host": [
+								"sandbox-dev",
+								"appletreepayments",
+								"com"
+							],
+							"path": [
+								"vas",
+								"V2",
+								"Countries"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Server",
+							"value": "Microsoft-IIS/10.0"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 04 Nov 2025 12:43:10 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"Status\": \"FOUND\",\n    \"ResultMessage\": \"Request processed successfully.\",\n    \"Countries\": [\n        {\n            \"Code\": \"BD\",\n            \"Name\": \"Bangladesh\"\n        },\n        {\n            \"Code\": \"ID\",\n            \"Name\": \"Indonesia\"\n        },\n        {\n            \"Code\": \"NG\",\n            \"Name\": \"Nigeria\"\n        },\n        {\n            \"Code\": \"PH\",\n            \"Name\": \"Philippines\"\n        },\n        {\n            \"Code\": \"QA\",\n            \"Name\": \"Qatar\"\n        },\n        {\n            \"Code\": \"SV\",\n            \"Name\": \"El Salvador\"\n        },\n        {\n            \"Code\": \"ZA\",\n            \"Name\": \"South Africa\"\n        },\n        {\n            \"Code\": \"ZW\",\n            \"Name\": \"Zimbabwe\"\n        },\n        {\n            \"Code\": \"ZW\",\n            \"Name\": \"Guatemala\"\n        },\n        {\n            \"Code\": \"ZW\",\n            \"Name\": \"Costa Rica\"\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "getServices",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "MerchantId",
+						"value": "23de4621-ea24-433f-9b45-dc1e383d8c2b",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://sandbox-dev.appletreepayments.com/vas/V2/Services",
+					"protocol": "https",
+					"host": [
+						"sandbox-dev",
+						"appletreepayments",
+						"com"
+					],
+					"path": [
+						"vas",
+						"V2",
+						"Services"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "getServicesByCategory",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "MerchantId",
+								"value": "23de4621-ea24-433f-9b45-dc1e383d8c2b",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://sandbox-dev.appletreepayments.com/vas/V2/Services",
+							"protocol": "https",
+							"host": [
+								"sandbox-dev",
+								"appletreepayments",
+								"com"
+							],
+							"path": [
+								"vas",
+								"V2",
+								"Services"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Server",
+							"value": "Microsoft-IIS/10.0"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 04 Nov 2025 12:44:38 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"Status\": \"FOUND\",\n    \"ResultMessage\": \"Request processed successfully.\",\n    \"Services\": [\n        {\n            \"Id\": 1,\n            \"Name\": \"Mobile Airtime\"\n        },\n        {\n            \"Id\": 2,\n            \"Name\": \"Mobile Data\"\n        },\n        {\n            \"Id\": 3,\n            \"Name\": \"Mobile Bundles\"\n        },\n        {\n            \"Id\": 5,\n            \"Name\": \"Internet Broadband\"\n        },\n        {\n            \"Id\": 6,\n            \"Name\": \"Electricity\"\n        },\n        {\n            \"Id\": 8,\n            \"Name\": \"Gas\"\n        },\n        {\n            \"Id\": 9,\n            \"Name\": \"Education\"\n        },\n        {\n            \"Id\": 10,\n            \"Name\": \"Insurance\"\n        },\n        {\n            \"Id\": 12,\n            \"Name\": \"Phone\"\n        },\n        {\n            \"Id\": 13,\n            \"Name\": \"Television\"\n        },\n        {\n            \"Id\": 17,\n            \"Name\": \"Local Authorities\"\n        },\n        {\n            \"Id\": 18,\n            \"Name\": \"Retail Shops\"\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "getServiceProviders",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "MerchantId",
+						"value": "23de4621-ea24-433f-9b45-dc1e383d8c2b",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://sandbox-dev.appletreepayments.com/vas/V2/ServiceProviders",
+					"protocol": "https",
+					"host": [
+						"sandbox-dev",
+						"appletreepayments",
+						"com"
+					],
+					"path": [
+						"vas",
+						"V2",
+						"ServiceProviders"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "getServiceProviders",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "MerchantId",
+								"value": "23de4621-ea24-433f-9b45-dc1e383d8c2b",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://sandbox-dev.appletreepayments.com/vas/V2/ServiceProviders",
+							"protocol": "https",
+							"host": [
+								"sandbox-dev",
+								"appletreepayments",
+								"com"
+							],
+							"path": [
+								"vas",
+								"V2",
+								"ServiceProviders"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Server",
+							"value": "Microsoft-IIS/10.0"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 04 Nov 2025 12:49:24 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"Status\": \"FOUND\",\n    \"ResultMessage\": \"Request processed successfully.\",\n    \"ServiceProviders\": [\n        {\n            \"Id\": \"DT_1707\",\n            \"LogoURL\": \"\",\n            \"Name\": \"9Mobile Nigeria\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"NG\",\n                \"Name\": \"Nigeria\"\n            }\n        },\n        {\n            \"Id\": \"DT_1449\",\n            \"LogoURL\": \"\",\n            \"Name\": \"Airtel Bangladesh\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"BD\",\n                \"Name\": \"Bangladesh\"\n            }\n        },\n        {\n            \"Id\": \"DT_1537\",\n            \"LogoURL\": \"\",\n            \"Name\": \"Airtel Nigeria\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"NG\",\n                \"Name\": \"Nigeria\"\n            }\n        },\n        {\n            \"Id\": \"DT_1447\",\n            \"LogoURL\": \"\",\n            \"Name\": \"Banglalink Bangladesh\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"BD\",\n                \"Name\": \"Bangladesh\"\n            }\n        },\n        {\n            \"Id\": \"ES_BYOBILL\",\n            \"LogoURL\": null,\n            \"Name\": \"BYOBILL\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        },\n        {\n            \"Id\": \"DT_1726\",\n            \"LogoURL\": \"\",\n            \"Name\": \"CellC South Africa\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZA\",\n                \"Name\": \"South Africa\"\n            }\n        },\n        {\n            \"Id\": \"DT_1928\",\n            \"LogoURL\": \"\",\n            \"Name\": \"Claro Costa Rica\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Costa Rica\"\n            }\n        },\n        {\n            \"Id\": \"DT_1521\",\n            \"LogoURL\": \"\",\n            \"Name\": \"Claro Guatemala\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Guatemala\"\n            }\n        },\n        {\n            \"Id\": \"ES_CUT\",\n            \"LogoURL\": \"\",\n            \"Name\": \"CUT\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        },\n        {\n            \"Id\": \"DT_177\",\n            \"LogoURL\": \"\",\n            \"Name\": \"Digicel El Salvador\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"SV\",\n                \"Name\": \"El Salvador\"\n            }\n        },\n        {\n            \"Id\": \"ES_DSTV\",\n            \"LogoURL\": \"\",\n            \"Name\": \"DSTV\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        },\n        {\n            \"Id\": \"ES_ECONET\",\n            \"LogoURL\": \"\",\n            \"Name\": \"ECONET\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        },\n        {\n            \"Id\": \"ES_EDGARS\",\n            \"LogoURL\": \"\",\n            \"Name\": \"EDGARS\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        },\n        {\n            \"Id\": \"DT_1612\",\n            \"LogoURL\": \"\",\n            \"Name\": \"Glo Mobile Nigeria\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"NG\",\n                \"Name\": \"Nigeria\"\n            }\n        },\n        {\n            \"Id\": \"DT_246\",\n            \"LogoURL\": \"\",\n            \"Name\": \"Globe Telecom Philippines\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"PH\",\n                \"Name\": \"Philippines\"\n            }\n        },\n        {\n            \"Id\": \"ES_GWERU\",\n            \"LogoURL\": null,\n            \"Name\": \"GWERU\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        },\n        {\n            \"Id\": \"ES_HARARE\",\n            \"LogoURL\": null,\n            \"Name\": \"HARARE\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        },\n        {\n            \"Id\": \"ES_MOONLIGHT\",\n            \"LogoURL\": null,\n            \"Name\": \"MOONLIGHT\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        },\n        {\n            \"Id\": \"DT_358\",\n            \"LogoURL\": \"\",\n            \"Name\": \"MTN Nigeria\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"NG\",\n                \"Name\": \"Nigeria\"\n            }\n        },\n        {\n            \"Id\": \"DT_1724\",\n            \"LogoURL\": \"\",\n            \"Name\": \"MTN South Africa\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZA\",\n                \"Name\": \"South Africa\"\n            }\n        },\n        {\n            \"Id\": \"ES_NETONE\",\n            \"LogoURL\": null,\n            \"Name\": \"NETONE\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        },\n        {\n            \"Id\": \"ES_NUST\",\n            \"LogoURL\": null,\n            \"Name\": \"NUST\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        },\n        {\n            \"Id\": \"ES_NYARADZO\",\n            \"LogoURL\": null,\n            \"Name\": \"NYARADZO\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        },\n        {\n            \"Id\": \"DT_511\",\n            \"LogoURL\": \"\",\n            \"Name\": \"Ooredoo Qatar\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"QA\",\n                \"Name\": \"Qatar\"\n            }\n        },\n        {\n            \"Id\": \"BS_POWERTEL\",\n            \"LogoURL\": null,\n            \"Name\": \"Powertel SA\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        },\n        {\n            \"Id\": \"DT_1707\",\n            \"LogoURL\": \"\",\n            \"Name\": \"T2 Mobile Nigeria\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"NG\",\n                \"Name\": \"Nigeria\"\n            }\n        },\n        {\n            \"Id\": \"ES_TELECEL\",\n            \"LogoURL\": \"\",\n            \"Name\": \"TELECEL\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        },\n        {\n            \"Id\": \"DT_1324\",\n            \"LogoURL\": \"\",\n            \"Name\": \"Telkomsel Indonesia\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ID\",\n                \"Name\": \"Indonesia\"\n            }\n        },\n        {\n            \"Id\": \"ES_TELONE\",\n            \"LogoURL\": \"\",\n            \"Name\": \"TELONE\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        },\n        {\n            \"Id\": \"PN_TEST\",\n            \"LogoURL\": \"https://billpay-staging.paynow.co.zw/uploadedfiles/2a0b3c4f-e9f5-4d7e-afd8-28343f289b27.png\",\n            \"Name\": \"Test Biller\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        },\n        {\n            \"Id\": \"DT_1327\",\n            \"LogoURL\": \"\",\n            \"Name\": \"Tri Indonesia\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ID\",\n                \"Name\": \"Indonesia\"\n            }\n        },\n        {\n            \"Id\": \"DT_215\",\n            \"LogoURL\": \"\",\n            \"Name\": \"XL Indonesia\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ID\",\n                \"Name\": \"Indonesia\"\n            }\n        },\n        {\n            \"Id\": \"ES_ZETDC\",\n            \"LogoURL\": null,\n            \"Name\": \"ZETDC\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        },\n        {\n            \"Id\": \"ES_ZOL\",\n            \"LogoURL\": \"\",\n            \"Name\": \"ZOL\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "getProducts",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "MerchantId",
+						"value": "23de4621-ea24-433f-9b45-dc1e383d8c2b",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://sandbox-dev.appletreepayments.com/vas/V2/Products?countryCode=ZW&service=1",
+					"protocol": "https",
+					"host": [
+						"sandbox-dev",
+						"appletreepayments",
+						"com"
+					],
+					"path": [
+						"vas",
+						"V2",
+						"Products"
+					],
+					"query": [
+						{
+							"key": "countryCode",
+							"value": "ZW"
+						},
+						{
+							"key": "service",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "getProducts",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "MerchantId",
+								"value": "23de4621-ea24-433f-9b45-dc1e383d8c2b",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://sandbox-dev.appletreepayments.com/vas/V2/Products?countryCode=ZW&service=6",
+							"protocol": "https",
+							"host": [
+								"sandbox-dev",
+								"appletreepayments",
+								"com"
+							],
+							"path": [
+								"vas",
+								"V2",
+								"Products"
+							],
+							"query": [
+								{
+									"key": "countryCode",
+									"value": "ZW"
+								},
+								{
+									"key": "service",
+									"value": "6"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Server",
+							"value": "Microsoft-IIS/10.0"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 04 Nov 2025 12:51:05 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"Status\": \"FOUND\",\n    \"ResultMessage\": \"Request processed successfully.\",\n    \"Products\": [\n        {\n            \"Id\": \"BS_POWERTEL_001_ZA\",\n            \"Aggregator\": 1,\n            \"ImageURL\": null,\n            \"Name\": \"FX Prepaid\",\n            \"Description\": \"FX Prepaid Electricity\",\n            \"ProductType\": \"VariableAmount\",\n            \"TermsAndConditions\": null,\n            \"ServiceProvider\": {\n                \"Id\": \"BS_POWERTEL\",\n                \"LogoURL\": null,\n                \"Name\": \"Powertel SA\",\n                \"Phone\": null,\n                \"Email\": null,\n                \"Country\": {\n                    \"Code\": \"ZW\",\n                    \"Name\": \"Zimbabwe\"\n                }\n            },\n            \"Currency\": \"ZAR\",\n            \"Price\": 0,\n            \"MinimumAmount\": 0,\n            \"MaximumAmount\": 0,\n            \"SpecifyQuantity\": false,\n            \"BalanceAvailable\": false,\n            \"Quantity\": {\n                \"MinimumValue\": 0,\n                \"MaximumValue\": 0,\n                \"Unit\": \"\"\n            },\n            \"ReturnsVouchers\": false,\n            \"ReverseOnTimeout\": true,\n            \"LastTokenAvailable\": true,\n            \"Reversible\": true,\n            \"Service\": {\n                \"Id\": 6,\n                \"Name\": \"Electricity\"\n            },\n            \"Validity\": null,\n            \"PrePaymentInstructions\": null,\n            \"PostPaymentInstructions\": null,\n            \"MobileNumberRegex\": null,\n            \"ValidationRequired\": true,\n            \"CreditPartyIdentifiers\": [\n                {\n                    \"Required\": true,\n                    \"Name\": \"AccountNumber\",\n                    \"Title\": \"Meter Number\",\n                    \"RegexExpression\": null\n                }\n            ]\n        },\n        {\n            \"Id\": \"PN_TEST_ZETDC\",\n            \"Aggregator\": 4,\n            \"ImageURL\": null,\n            \"Name\": \"ZETDC Post Paid\",\n            \"Description\": \"Pay for your post paid electricty.\",\n            \"ProductType\": \"VariableAmount\",\n            \"TermsAndConditions\": null,\n            \"ServiceProvider\": {\n                \"Id\": \"PN_TEST\",\n                \"LogoURL\": \"https://billpay-staging.paynow.co.zw/uploadedfiles/2a0b3c4f-e9f5-4d7e-afd8-28343f289b27.png\",\n                \"Name\": \"Test Biller\",\n                \"Phone\": null,\n                \"Email\": null,\n                \"Country\": {\n                    \"Code\": \"ZW\",\n                    \"Name\": \"Zimbabwe\"\n                }\n            },\n            \"Currency\": \"USD\",\n            \"Price\": 0,\n            \"MinimumAmount\": 0,\n            \"MaximumAmount\": 0,\n            \"SpecifyQuantity\": false,\n            \"BalanceAvailable\": true,\n            \"Quantity\": {\n                \"MinimumValue\": 0,\n                \"MaximumValue\": 0,\n                \"Unit\": \"\"\n            },\n            \"ReturnsVouchers\": false,\n            \"ReverseOnTimeout\": false,\n            \"LastTokenAvailable\": false,\n            \"Reversible\": false,\n            \"Service\": {\n                \"Id\": 6,\n                \"Name\": \"Electricity\"\n            },\n            \"Validity\": null,\n            \"PrePaymentInstructions\": \"\",\n            \"PostPaymentInstructions\": \"\",\n            \"MobileNumberRegex\": null,\n            \"ValidationRequired\": true,\n            \"CreditPartyIdentifiers\": [\n                {\n                    \"Required\": true,\n                    \"Name\": \"MemberNumber\",\n                    \"Title\": \"Account Number\",\n                    \"RegexExpression\": null\n                }\n            ]\n        },\n        {\n            \"Id\": \"ES_ZETDC_PREPAID\",\n            \"Aggregator\": 3,\n            \"ImageURL\": null,\n            \"Name\": \"ZETDC_PREPAID\",\n            \"Description\": \"ZETDC_PREPAID\",\n            \"ProductType\": \"VariableAmount\",\n            \"TermsAndConditions\": null,\n            \"ServiceProvider\": {\n                \"Id\": \"ES_ZETDC\",\n                \"LogoURL\": null,\n                \"Name\": \"ZETDC\",\n                \"Phone\": null,\n                \"Email\": null,\n                \"Country\": {\n                    \"Code\": \"ZW\",\n                    \"Name\": \"Zimbabwe\"\n                }\n            },\n            \"Currency\": \"ZWL\",\n            \"Price\": 0,\n            \"MinimumAmount\": 0,\n            \"MaximumAmount\": 0,\n            \"SpecifyQuantity\": false,\n            \"BalanceAvailable\": false,\n            \"Quantity\": {\n                \"MinimumValue\": 0,\n                \"MaximumValue\": 0,\n                \"Unit\": \"\"\n            },\n            \"ReturnsVouchers\": false,\n            \"ReverseOnTimeout\": false,\n            \"LastTokenAvailable\": false,\n            \"Reversible\": false,\n            \"Service\": {\n                \"Id\": 6,\n                \"Name\": \"Electricity\"\n            },\n            \"Validity\": null,\n            \"PrePaymentInstructions\": null,\n            \"PostPaymentInstructions\": null,\n            \"MobileNumberRegex\": null,\n            \"ValidationRequired\": false,\n            \"CreditPartyIdentifiers\": [\n                {\n                    \"Required\": true,\n                    \"Name\": \"AccountNumber\",\n                    \"Title\": \"Mobile Number\",\n                    \"RegexExpression\": null\n                }\n            ]\n        },\n        {\n            \"Id\": \"ES_ZETDC_PREPAID_USD\",\n            \"Aggregator\": 3,\n            \"ImageURL\": null,\n            \"Name\": \"ZETDC_PREPAID\",\n            \"Description\": \"ZETDC_PREPAID\",\n            \"ProductType\": \"VariableAmount\",\n            \"TermsAndConditions\": null,\n            \"ServiceProvider\": {\n                \"Id\": \"ES_ZETDC\",\n                \"LogoURL\": null,\n                \"Name\": \"ZETDC\",\n                \"Phone\": null,\n                \"Email\": null,\n                \"Country\": {\n                    \"Code\": \"ZW\",\n                    \"Name\": \"Zimbabwe\"\n                }\n            },\n            \"Currency\": \"USD\",\n            \"Price\": 0,\n            \"MinimumAmount\": 0,\n            \"MaximumAmount\": 0,\n            \"SpecifyQuantity\": false,\n            \"BalanceAvailable\": false,\n            \"Quantity\": {\n                \"MinimumValue\": 0,\n                \"MaximumValue\": 0,\n                \"Unit\": \"\"\n            },\n            \"ReturnsVouchers\": false,\n            \"ReverseOnTimeout\": false,\n            \"LastTokenAvailable\": false,\n            \"Reversible\": false,\n            \"Service\": {\n                \"Id\": 6,\n                \"Name\": \"Electricity\"\n            },\n            \"Validity\": null,\n            \"PrePaymentInstructions\": null,\n            \"PostPaymentInstructions\": null,\n            \"MobileNumberRegex\": null,\n            \"ValidationRequired\": false,\n            \"CreditPartyIdentifiers\": [\n                {\n                    \"Required\": true,\n                    \"Name\": \"AccountNumber\",\n                    \"Title\": \"Mobile Number\",\n                    \"RegexExpression\": null\n                }\n            ]\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "getProductById",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "MerchantId",
+						"value": "23de4621-ea24-433f-9b45-dc1e383d8c2b",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://sandbox-dev.appletreepayments.com/vas/V2/Product?id=ES_TELECEL_AIRTIME",
+					"protocol": "https",
+					"host": [
+						"sandbox-dev",
+						"appletreepayments",
+						"com"
+					],
+					"path": [
+						"vas",
+						"V2",
+						"Product"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "ES_TELECEL_AIRTIME"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "getProductById",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "MerchantId",
+								"value": "23de4621-ea24-433f-9b45-dc1e383d8c2b",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://sandbox-dev.appletreepayments.com/vas/V2/Product?id=ES_ZETDC_PREPAID_USD",
+							"protocol": "https",
+							"host": [
+								"sandbox-dev",
+								"appletreepayments",
+								"com"
+							],
+							"path": [
+								"vas",
+								"V2",
+								"Product"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "ES_ZETDC_PREPAID_USD"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Server",
+							"value": "Microsoft-IIS/10.0"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 04 Nov 2025 13:00:04 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"Status\": \"FOUND\",\n    \"ResultMessage\": \"Product retrieved successfuly.\",\n    \"ServiceProduct\": {\n        \"Id\": \"ES_ZETDC_PREPAID_USD\",\n        \"Aggregator\": 3,\n        \"ImageURL\": null,\n        \"Name\": \"ZETDC_PREPAID\",\n        \"Description\": \"ZETDC_PREPAID\",\n        \"ProductType\": \"VariableAmount\",\n        \"TermsAndConditions\": null,\n        \"ServiceProvider\": {\n            \"Id\": \"ES_ZETDC\",\n            \"LogoURL\": null,\n            \"Name\": \"ZETDC\",\n            \"Phone\": null,\n            \"Email\": null,\n            \"Country\": {\n                \"Code\": \"ZW\",\n                \"Name\": \"Zimbabwe\"\n            }\n        },\n        \"Currency\": \"USD\",\n        \"Price\": 0,\n        \"MinimumAmount\": 0,\n        \"MaximumAmount\": 0,\n        \"SpecifyQuantity\": false,\n        \"BalanceAvailable\": false,\n        \"Quantity\": {\n            \"MinimumValue\": 0,\n            \"MaximumValue\": 0,\n            \"Unit\": \"\"\n        },\n        \"ReturnsVouchers\": false,\n        \"ReverseOnTimeout\": false,\n        \"LastTokenAvailable\": false,\n        \"Reversible\": false,\n        \"Service\": {\n            \"Id\": 6,\n            \"Name\": \"Electricity\"\n        },\n        \"Validity\": null,\n        \"PrePaymentInstructions\": null,\n        \"PostPaymentInstructions\": null,\n        \"MobileNumberRegex\": null,\n        \"ValidationRequired\": false,\n        \"CreditPartyIdentifiers\": [\n            {\n                \"Required\": true,\n                \"Name\": \"AccountNumber\",\n                \"Title\": \"Mobile Number\",\n                \"RegexExpression\": null\n            }\n        ]\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "ValidatePayment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "MerchantId",
+						"value": "23de4621-ea24-433f-9b45-dc1e383d8c2b"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n    \"RequestId\": \"34eb0d65-007f-4974-ac06-07e1012177b7\",\n\n    \"Amount\": 10.0,\n\n    \"CreditPartyIdentifiers\": [\n\n        {\n\n            \"IdentifierFieldName\": \"AccountNumber\",\n\n            \"IdentifierFieldValue\": \"37242550871\"\n\n        }\n\n    ],\n\n    \"Currency\": \"ZWL\",\n\n    \"CustomerDetails\": {\n\n        \"CustomerId\": \"1L\",\n\n        \"Fullname\": \"1L\",\n\n        \"MobileNumber\": \"+263777077921\",\n\n        \"EmailAddress\": null\n\n    },\n\n    \"POSDetails\": {\n\n        \"CashierId\": \"1L\",\n\n        \"StoreId\": \"1L\",\n\n        \"TerminalId\": \"1L\"\n\n    },\n\n    \"ProductId\": \"ES_ZETDC_PREPAID\",\n\n    \"Quantity\": 1\n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://sandbox-dev.appletreepayments.com/vas/V2/ValidatePayment",
+					"protocol": "https",
+					"host": [
+						"sandbox-dev",
+						"appletreepayments",
+						"com"
+					],
+					"path": [
+						"vas",
+						"V2",
+						"ValidatePayment"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "https://sandbox-dev.appletreepayments.com/vas/V2/ValidatePayment",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "MerchantId",
+								"value": "23de4621-ea24-433f-9b45-dc1e383d8c2b"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\n    \"RequestId\": \"34eb0d65-007f-4974-ac06-07e1012177b7\",\n\n    \"Amount\": 10.0,\n\n    \"CreditPartyIdentifiers\": [\n\n        {\n\n            \"IdentifierFieldName\": \"AccountNumber\",\n\n            \"IdentifierFieldValue\": \"37242550871\"\n\n        }\n\n    ],\n\n    \"Currency\": \"ZWL\",\n\n    \"CustomerDetails\": {\n\n        \"CustomerId\": \"1L\",\n\n        \"Fullname\": \"1L\",\n\n        \"MobileNumber\": \"+263777077921\",\n\n        \"EmailAddress\": null\n\n    },\n\n    \"POSDetails\": {\n\n        \"CashierId\": \"1L\",\n\n        \"StoreId\": \"1L\",\n\n        \"TerminalId\": \"1L\"\n\n    },\n\n    \"ProductId\": \"ES_ZETDC_PREPAID\",\n\n    \"Quantity\": 1\n\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://sandbox-dev.appletreepayments.com/vas/V2/ValidatePayment",
+							"protocol": "https",
+							"host": [
+								"sandbox-dev",
+								"appletreepayments",
+								"com"
+							],
+							"path": [
+								"vas",
+								"V2",
+								"ValidatePayment"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Server",
+							"value": "Microsoft-IIS/10.0"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 04 Nov 2025 13:15:05 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"RequestId\": \"34eb0d65-007f-4974-ac06-07e1012177b7\",\n    \"Status\": \"VALIDATED\",\n    \"ResultMessage\": \"Validation succeeded.\",\n    \"BillAmount\": 0,\n    \"DisplayData\": [\n        {\n            \"Label\": \"Account Name\",\n            \"Value\": \"MAVHUNE INNOCENT\\n7205 MAKONDO EX 11M AIRDEC CHIREDZI\"\n        },\n        {\n            \"Label\": \"Account Address\",\n            \"Value\": null\n        }\n    ],\n    \"ModelState\": null\n}"
+				},
+				{
+					"name": "https://sandbox-dev.appletreepayments.com/vas/V2/ValidatePayment",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "MerchantId",
+								"value": "23de4621-ea24-433f-9b45-dc1e383d8c2b"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\n    \"RequestId\": \"34eb0d65-007f-4974-ac06-07e1012177b7\",\n\n    \"Amount\": 10.0,\n\n    \"CreditPartyIdentifiers\": [\n\n        {\n\n            \"IdentifierFieldName\": \"AccountNumber\",\n\n            \"IdentifierFieldValue\": \"37242550871\"\n\n        }\n\n    ],\n\n    \"Currency\": \"ZWL\",\n\n    \"CustomerDetails\": {\n\n        \"CustomerId\": \"1L\",\n\n        \"Fullname\": \"1L\",\n\n        \"MobileNumber\": \"+263777077921\",\n\n        \"EmailAddress\": null\n\n    },\n\n    \"POSDetails\": {\n\n        \"CashierId\": \"1L\",\n\n        \"StoreId\": \"1L\",\n\n        \"TerminalId\": \"1L\"\n\n    },\n\n    \"ProductId\": \"ES_ZETDC_PREPAID\",\n\n    \"Quantity\": 1\n\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://sandbox-dev.appletreepayments.com/vas/V2/ValidatePayment",
+							"protocol": "https",
+							"host": [
+								"sandbox-dev",
+								"appletreepayments",
+								"com"
+							],
+							"path": [
+								"vas",
+								"V2",
+								"ValidatePayment"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Server",
+							"value": "Microsoft-IIS/10.0"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 04 Nov 2025 13:16:21 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"RequestId\": \"34eb0d65-007f-4974-ac06-07e1012177b7\",\n    \"Status\": \"FAILEDREPEATABLE\",\n    \"ResultMessage\": \"Duplicate transaction reference.\",\n    \"BillAmount\": 0,\n    \"DisplayData\": null,\n    \"ModelState\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "PostPayment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "MerchantId",
+						"value": "23de4621-ea24-433f-9b45-dc1e383d8c2b",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"RequestId\": \"3fa85f64-5717-0042-b3fc-2c963f66afa6\",\r\n    \"PaymentChannel\": \"SuperApp\",\r\n    \"PaymentReferenceNumber\": \"string\",\r\n    \"ProductId\": \"PN_TEST_ECONET\",\r\n    \"BillReferenceNumber\": null,\r\n    \"Quantity\": \"1\",\r\n    \"Currency\": \"USD\",\r\n    \"Amount\": 10.0,\r\n    \"CustomerDetails\": {\r\n        \"CustomerId\": \"1\",\r\n        \"Fullname\": \"Ty\",\r\n        \"MobileNumber\": \"+26379325860\",\r\n        \"EmailAddress\": \"string\"\r\n    },\r\n    \"CreditPartyIdentifiers\": [\r\n        {\r\n            \"IdentifierFieldName\": \"MemberNumber\",\r\n            \"IdentifierFieldValue\": \"+26379325860\"\r\n        }\r\n    ],\r\n    \"POSDetails\": {\r\n        \"StoreId\": \"SuperApp\",\r\n        \"TerminalId\": \"SuperApp\",\r\n        \"CashierId\": \"SuperApp\"\r\n    }\r\n}\r\n\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://sandbox-apg.azurewebsites.net/billpayments/v2/postpayment",
+					"protocol": "https",
+					"host": [
+						"sandbox-apg",
+						"azurewebsites",
+						"net"
+					],
+					"path": [
+						"billpayments",
+						"v2",
+						"postpayment"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "PostPayment",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "MerchantId",
+								"value": "23de4621-ea24-433f-9b45-dc1e383d8c2b",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"RequestId\": \"3fa83f64-5718-0042-b3fc-2c963f35afa6\",\r\n    \"PaymentChannel\": \"SuperApp\",\r\n    \"PaymentReferenceNumber\": \"string\",\r\n    \"ProductId\": \"PN_TEST_ECONETVOUCHERS\",\r\n    \"BillReferenceNumber\": null,\r\n    \"Quantity\": \"1\",\r\n    \"Currency\": \"USD\",\r\n    \"Amount\": 10.0,\r\n    \"CustomerDetails\": {\r\n        \"CustomerId\": \"1\",\r\n        \"Fullname\": \"Ty\",\r\n        \"MobileNumber\": \"+26379325860\",\r\n        \"EmailAddress\": \"string\"\r\n    },\r\n    \"CreditPartyIdentifiers\": [\r\n        {\r\n            \"IdentifierFieldName\": \"MemberNumber\",\r\n            \"IdentifierFieldValue\": \"+26379325860\"\r\n        }\r\n    ],\r\n    \"POSDetails\": {\r\n        \"StoreId\": \"SuperApp\",\r\n        \"TerminalId\": \"SuperApp\",\r\n        \"CashierId\": \"SuperApp\"\r\n    }\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://sandbox-apg.azurewebsites.net/billpayments/v2/postpayment",
+							"protocol": "https",
+							"host": [
+								"sandbox-apg",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"billpayments",
+								"v2",
+								"postpayment"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 04 Nov 2025 13:39:29 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "Microsoft-IIS/10.0"
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "ARRAffinity=0f718dbc38d62fda9c501001355f2234247a93b872d0f38e14f889c85814a2f0;Path=/;HttpOnly;Secure;Domain=sandbox-apg.azurewebsites.net"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "ARRAffinitySameSite=0f718dbc38d62fda9c501001355f2234247a93b872d0f38e14f889c85814a2f0;Path=/;HttpOnly;SameSite=None;Secure;Domain=sandbox-apg.azurewebsites.net"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "ASP.NET"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"RequestId\": \"3fa83f64-5718-0042-b3fc-2c963f35afa6\",\n    \"Status\": \"SUCCESSFUL\",\n    \"ResultMessage\": \"Payment succeeded.\",\n    \"ReferenceNumber\": \"TEST-251103120651-XP7PD\",\n    \"DisplayData\": [\n        {\n            \"Label\": \"Member Number\",\n            \"Value\": \"+26379325860\"\n        },\n        {\n            \"Label\": \"Member Name\",\n            \"Value\": \"Test Member\"\n        },\n        {\n            \"Label\": \"Residence\",\n            \"Value\": \"27B\"\n        },\n        {\n            \"Label\": \"Dining Hall\",\n            \"Value\": \"Msasa Hall\"\n        },\n        {\n            \"Label\": \"Data Balance\",\n            \"Value\": \"1.23GB\"\n        },\n        {\n            \"Label\": \"Meal Credits\",\n            \"Value\": \"123\"\n        },\n        {\n            \"Label\": \"Account Balance\",\n            \"Value\": \"12.34\"\n        },\n        {\n            \"Label\": \"Info\",\n            \"Value\": \"Some information the customer should see!\"\n        },\n        {\n            \"Label\": \"Details\",\n            \"Value\": \"More information the customer should see\"\n        }\n    ],\n    \"Vouchers\": [\n        {\n            \"SerialNumber\": \"234 5678 91011\",\n            \"VoucherCode\": \"DEMO 234 5678 9101112 13141516 17\",\n            \"ValidDays\": 30,\n            \"ExpiryDate\": \"2025-12-03T12:06:55.277\"\n        }\n    ],\n    \"ResultInformation\": null,\n    \"ReceiptHTML\": [\n        \"<html>\\r\\n<body>\\r\\n<h1>Test Receipt #1 HTML</h1>\\r\\n<p>If present, this should be made available to the customer. Billers like ZETDC will populate the receipt HTML</p>\\r\\n</body>\\r\\n</html>\",\n        \"<html>\\r\\n<body>\\r\\n<h1>Test Receipt #2 HTML</h1>\\r\\n<p>If present, this ALSO should be made available to the customer. Billers like ZETDC required that if multiple tokens are returned, a separate receipt for each should be issued to the customer</p>\\r\\n</body>\\r\\n</html>\"\n    ],\n    \"ReceiptSmses\": [\n        \"Receipt SMS #1. If present, this must be sent via SMS to the customer\",\n        \"Receipt SMS #2. If present, this must ALSO be sent via SMS to the customer\"\n    ],\n    \"ModelState\": null\n}"
+				},
+				{
+					"name": "PostPayment",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "MerchantId",
+								"value": "23de4621-ea24-433f-9b45-dc1e383d8c2b",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"RequestId\": \"3fa83f64-5718-0042-b3fc-2c963f35afa6\",\r\n    \"PaymentChannel\": \"SuperApp\",\r\n    \"PaymentReferenceNumber\": \"string\",\r\n    \"ProductId\": \"PN_TEST_ECONETVOUCHERSr\",\r\n    \"BillReferenceNumber\": null,\r\n    \"Quantity\": \"1\",\r\n    \"Currency\": \"USD\",\r\n    \"Amount\": 10.0,\r\n    \"CustomerDetails\": {\r\n        \"CustomerId\": \"1\",\r\n        \"Fullname\": \"Ty\",\r\n        \"MobileNumber\": \"+26379325860\",\r\n        \"EmailAddress\": \"string\"\r\n    },\r\n    \"CreditPartyIdentifiers\": [\r\n        {\r\n            \"IdentifierFieldName\": \"MemberNumber\",\r\n            \"IdentifierFieldValue\": \"+26379325860\"\r\n        }\r\n    ],\r\n    \"POSDetails\": {\r\n        \"StoreId\": \"SuperApp\",\r\n        \"TerminalId\": \"SuperApp\",\r\n        \"CashierId\": \"SuperApp\"\r\n    }\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://sandbox-apg.azurewebsites.net/billpayments/v2/postpayment",
+							"protocol": "https",
+							"host": [
+								"sandbox-apg",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"billpayments",
+								"v2",
+								"postpayment"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 04 Nov 2025 13:44:28 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "Microsoft-IIS/10.0"
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "ASP.NET"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"RequestId\": \"3fa83f64-5718-0042-b3fc-2c963f35afa6\",\n    \"Status\": \"FAILEDREPEATABLE\",\n    \"ResultMessage\": \"Invalid product id.\",\n    \"ReferenceNumber\": null,\n    \"DisplayData\": null,\n    \"Vouchers\": null,\n    \"ResultInformation\": null,\n    \"ReceiptHTML\": null,\n    \"ReceiptSmses\": null,\n    \"ModelState\": null\n}"
+				}
+			]
+		}
+	]
+}

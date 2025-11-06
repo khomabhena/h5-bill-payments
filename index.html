@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>h5-bill-payments</title>
+    
+    <!-- DEVELOPMENT ONLY: Mock SuperApp bridge for browser testing -->
+    <!-- Remove this in production! -->
+    <script src="/superapp/mock-bridge.js"></script>
+    
+    <!-- SuperApp JS SDK - Must load BEFORE React app -->
+    <!-- This creates window.payment using the bridge above -->
+    <script src="/superapp/js-sdk.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+
