@@ -24,6 +24,28 @@ const Payment = () => {
   const [error, setError] = useState(null);
   const { userData, getAuthToken } = useUserAuth();
 
+  // Hide SuperApp header
+  useEffect(() => {
+    if (window.payment && typeof window.payment.setHeader === 'function') {
+      try {
+        window.payment.setHeader({ visible: false });
+      } catch (error) {
+        // Silently fail if setHeader is not available or fails
+      }
+    }
+    
+    // Cleanup: Show header again when component unmounts
+    return () => {
+      if (window.payment && typeof window.payment.setHeader === 'function') {
+        try {
+          window.payment.setHeader({ visible: true });
+        } catch (error) {
+          // Silently fail if setHeader is not available or fails
+        }
+      }
+    };
+  }, []);
+
   // Redirect if no required data
   useEffect(() => {
     if (!product || !country || !service || !provider || !accountValue || !amount) {
