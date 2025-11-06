@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import Button from '../components/Button';
@@ -22,16 +22,51 @@ const Payment = () => {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
+  const [debugLogs, setDebugLogs] = useState([]);
+  const [showDebugLogs, setShowDebugLogs] = useState(true);
   const { userData, getAuthToken } = useUserAuth();
 
-  // Hide SuperApp header
+  // Debug logging function that adds logs to state (visible in SuperApp UI)
+  const addDebugLog = useCallback((type, message, data = null) => {
+    const timestamp = new Date().toLocaleTimeString();
+    const logEntry = {
+      id: Date.now() + Math.random(),
+      timestamp,
+      type, // 'info', 'error', 'success', 'warning', 'data'
+      message,
+      data: data ? JSON.stringify(data, null, 2) : null
+    };
+    
+    setDebugLogs(prev => {
+      const newLogs = [...prev, logEntry];
+      // Keep only last 100 logs to prevent memory issues
+      return newLogs.slice(-100);
+    });
+  }, []);
+
+  // Hide SuperApp header and log bridge availability
   useEffect(() => {
-    if (window.payment && typeof window.payment.setHeader === 'function') {
-      try {
-        window.payment.setHeader({ visible: false });
-      } catch (error) {
-        // Silently fail if setHeader is not available or fails
+    addDebugLog('info', '🔍 Checking SuperApp bridge availability...');
+    
+    if (window.payment) {
+      addDebugLog('success', '✅ window.payment is available');
+      addDebugLog('data', '📋 Available methods', Object.keys(window.payment));
+      
+      if (typeof window.payment.setHeader === 'function') {
+        try {
+          window.payment.setHeader({ visible: false });
+          addDebugLog('success', '✅ SuperApp header hidden');
+        } catch (error) {
+          addDebugLog('error', '❌ Failed to hide header', {
+            message: error?.message,
+            name: error?.name
+          });
+        }
+      } else {
+        addDebugLog('warning', '⚠️ window.payment.setHeader is not available');
       }
+    } else {
+      addDebugLog('error', '❌ window.payment is not available - not running in SuperApp');
     }
     
     // Cleanup: Show header again when component unmounts
@@ -44,7 +79,7 @@ const Payment = () => {
         }
       }
     };
-  }, []);
+  }, [addDebugLog]);
 
   // Redirect if no required data
   useEffect(() => {
@@ -73,10 +108,16 @@ const Payment = () => {
     
     setIsProcessing(true);
     setError(null);
+    setDebugLogs([]); // Clear previous logs
+    addDebugLog('info', '🚀 Payment process started');
     
     try {
-      // Initialize BillPaymentFlowManager
-      const flowManager = new BillPaymentFlowManager();
+      // Initialize BillPaymentFlowManager with debug logging callback
+      const flowManager = new BillPaymentFlowManager((type, message, data) => {
+        addDebugLog(type, message, data);
+      });
+      
+      addDebugLog('info', '✅ BillPaymentFlowManager initialized');
 
       // Prepare payment data
       const paymentData = {
@@ -92,9 +133,12 @@ const Payment = () => {
       // Get user info if available (optional - will use defaults if not available)
       let userInfo = null;
       try {
+        addDebugLog('info', '🔍 Attempting to get user info...');
         // Try to get auth token and user data if available
         if (window.payment && typeof window.payment.getAuthToken === 'function') {
+          addDebugLog('info', '✅ window.payment.getAuthToken is available');
           const authToken = await getAuthToken();
+          addDebugLog('success', '✅ Auth token retrieved');
           // If we have userData from useUserAuth, use it
           if (userData) {
             userInfo = {
@@ -105,16 +149,40 @@ const Payment = () => {
               authToken: authToken,
               openId: userData.openId
             };
+            addDebugLog('data', '👤 User info prepared', userInfo);
+          } else {
+            addDebugLog('warning', '⚠️ No userData available, using defaults');
           }
+        } else {
+          addDebugLog('warning', '⚠️ window.payment.getAuthToken not available');
         }
       } catch (userInfoError) {
+        addDebugLog('error', '❌ Failed to get user info', {
+          message: userInfoError?.message,
+          name: userInfoError?.name,
+          stack: userInfoError?.stack
+        });
         // User info is optional - continue with defaults
       }
+      
+      addDebugLog('info', '💳 Preparing payment data...', paymentData);
 
       // Execute payment flow (PostPayment disabled for now as requested)
+      addDebugLog('info', '🏪 Starting payment execution (cashier pull)...');
+      addDebugLog('info', '📋 Payment options', {
+        postToAppleTree: false,
+        hasUserInfo: !!userInfo
+      });
+      
       const paymentResult = await flowManager.executePayment(paymentData, {
         postToAppleTree: false, // Skip PostPayment for now - will implement later
         userInfo: userInfo
+      });
+      
+      addDebugLog('success', '✅ Payment execution completed', {
+        success: paymentResult.success,
+        transactionId: paymentResult.transactionId,
+        paymentStatus: paymentResult.paymentStatus
       });
 
       // Navigate to confirmation with payment result
@@ -145,6 +213,20 @@ const Payment = () => {
         }
       });
     } catch (error) {
+      // Log full error details for debugging
+      addDebugLog('error', '❌ Payment Error Caught', {
+        message: error?.message || 'Unknown error',
+        name: error?.name || 'Error',
+        stack: error?.stack || 'No stack trace',
+        fullError: error?.toString(),
+        errorObject: error
+      });
+      
+      // Check for SuperApp specific errors
+      if (error?.code) {
+        addDebugLog('error', '🔴 SuperApp Error Code', { code: error.code, msg: error.msg });
+      }
+      
       // Extract user-friendly error message
       let errorMessage = 'An unexpected error occurred. Please try again.';
       
@@ -154,18 +236,28 @@ const Payment = () => {
         // Provide more specific error messages
         if (error.message.includes('timeout')) {
           errorMessage = 'Payment request timed out. Please try again.';
+          addDebugLog('error', '⏱️ Timeout error detected');
         } else if (error.message.includes('window.payment')) {
           errorMessage = 'Payment system is not available. Please ensure you are using the SuperApp.';
+          addDebugLog('error', '🔴 SuperApp payment API not available');
         } else if (error.message.includes('cancelled') || error.message.includes('cancel')) {
           errorMessage = 'Payment was cancelled.';
+          addDebugLog('warning', '⚠️ Payment was cancelled by user');
         } else if (error.message.includes('denied') || error.message.includes('permission')) {
           errorMessage = 'Payment was denied. Please check your payment settings.';
+          addDebugLog('error', '🔴 Payment permission denied');
+        } else if (error.message.includes('cashier')) {
+          addDebugLog('error', '🔴 Cashier error detected', {
+            message: error.message,
+            source: 'CASHIER'
+          });
         }
       }
       
       setError(errorMessage);
     } finally {
       setIsProcessing(false);
+      addDebugLog('info', '🏁 Payment process completed');
     }
   };
 
@@ -235,6 +327,94 @@ const Payment = () => {
                 </div>
               </div>
             </div>
+          )}
+
+          {/* Debug Logs Display */}
+          {showDebugLogs && (
+            <div className="bg-gray-900 rounded-lg p-4 mb-4 border border-gray-700">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-bold text-white text-sm">
+                  Debug Logs {debugLogs.length > 0 && `(${debugLogs.length})`}
+                </h3>
+                <div className="flex items-center space-x-2">
+                  {debugLogs.length > 0 && (
+                    <button
+                      onClick={() => setDebugLogs([])}
+                      className="text-gray-400 hover:text-white text-xs px-2 py-1 rounded bg-gray-800"
+                      title="Clear logs"
+                    >
+                      Clear
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setShowDebugLogs(!showDebugLogs)}
+                    className="text-gray-400 hover:text-white text-xs"
+                  >
+                    Hide
+                  </button>
+                </div>
+              </div>
+              {debugLogs.length === 0 ? (
+                <p className="text-gray-500 text-xs">No logs yet. Start a payment to see debug information.</p>
+              ) : (
+              <div className="max-h-64 overflow-y-auto space-y-2">
+                {debugLogs.map((log) => {
+                  let bgColor = 'bg-gray-800';
+                  let textColor = 'text-gray-300';
+                  let icon = 'ℹ️';
+                  
+                  if (log.type === 'error') {
+                    bgColor = 'bg-red-900';
+                    textColor = 'text-red-200';
+                    icon = '❌';
+                  } else if (log.type === 'success') {
+                    bgColor = 'bg-green-900';
+                    textColor = 'text-green-200';
+                    icon = '✅';
+                  } else if (log.type === 'warning') {
+                    bgColor = 'bg-yellow-900';
+                    textColor = 'text-yellow-200';
+                    icon = '⚠️';
+                  } else if (log.type === 'data') {
+                    bgColor = 'bg-blue-900';
+                    textColor = 'text-blue-200';
+                    icon = '📋';
+                  }
+                  
+                  return (
+                    <div key={log.id} className={`${bgColor} ${textColor} rounded p-2 text-xs font-mono`}>
+                      <div className="flex items-start space-x-2">
+                        <span className="text-xs">{icon}</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-gray-400 text-[10px]">{log.timestamp}</span>
+                            <span className="text-gray-500">|</span>
+                            <span className="uppercase text-[10px] font-bold">{log.type}</span>
+                          </div>
+                          <p className="mt-1 break-words">{log.message}</p>
+                          {log.data && (
+                            <pre className="mt-2 text-[10px] bg-black bg-opacity-30 p-2 rounded overflow-x-auto">
+                              {log.data}
+                            </pre>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              )}
+            </div>
+          )}
+          
+          {/* Show Debug Logs Button (when hidden) */}
+          {!showDebugLogs && (
+            <button
+              onClick={() => setShowDebugLogs(true)}
+              className="w-full bg-gray-800 text-white text-xs py-2 rounded mb-4 hover:bg-gray-700"
+            >
+              Show Debug Logs {debugLogs.length > 0 && `(${debugLogs.length})`}
+            </button>
           )}
 
           {/* Security Notice */}

@@ -17,11 +17,11 @@ class BillPaymentFlowManager {
   }
 
   /**
-   * Helper to send error logs back to UI (production mode)
+   * Helper to send logs back to UI
+   * Logs all types when logCallback is provided (debug mode)
    */
   log(type, message, data = null) {
-    // Only log errors in production
-    if (type === 'error') {
+    if (this.logCallback) {
       this.logCallback(type, message, data);
     }
   }
