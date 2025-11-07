@@ -149,7 +149,7 @@ class BillPaymentFlowManager {
    * Build order data for bill payment
    */
   buildOrderData(paymentData) {
-    const { product, accountValue, amount } = paymentData;
+    const { product, accountValue, amount, validationData } = paymentData;
     const callbackData = this.buildCallbackData(paymentData);
     
     const currency = product?.Currency || 'USD';
@@ -167,7 +167,20 @@ class BillPaymentFlowManager {
       timeExpire: SuperAppPayment.calculateExpiryTime(30), // JSAPI expects milliseconds
       paymentProduct: 'InAppH5', // Payment product type
     };
-    
+
+    this.log('data', '📋 PrepayId Order Data (ready for SuperApp API)', {
+      amountCent,
+      currency,
+      description: orderData.description,
+      outBizId: orderData.outBizId,
+      timeExpire: orderData.timeExpire,
+      callbackInfo: callbackData,
+      paymentProduct: orderData.paymentProduct,
+      productId: product?.Id,
+      accountValue,
+      validationStatus: validationData?.Status
+    });
+
     this.log('data', '📦 Order Data', orderData);
     this.log('data', '📋 Callback Info (JSON String)', orderData.callbackInfo);
     

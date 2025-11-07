@@ -165,6 +165,11 @@ MIIG/gIBADANBgkqhkiG9w0BAQEFAASCBugwggbkAgEAAoIBgQCd+ww2Gci7qV0tK7XbSkmkzq/+Kl48
     const body = JSON.stringify(requestBody);
     const authHeader = await this.buildAuthorizationHeader('POST', url, body);
 
+    this.log('data', '🛠️ PrepayId canonical string + signature', {
+      canonicalString: this.buildCanonicalString('POST', url, body),
+      authorization: authHeader
+    });
+
     // Log the API request
     this.log('info', '📤 [API CALL] POST /v1/pay/pre-transaction/order/place', {
       endpoint: url,
@@ -465,6 +470,18 @@ MIIG/gIBADANBgkqhkiG9w0BAQEFAASCBugwggbkAgEAAoIBgQCd+ww2Gci7qV0tK7XbSkmkzq/+Kl48
 
   static calculateExpiryTime(minutes = 30) {
     return Date.now() + (minutes * 60 * 1000);
+  }
+
+  buildCanonicalString(method, url, body = '') {
+    const nonceStr = this.generateNonce();
+    const timestamp = Math.floor(Date.now() / 1000);
+    const canonicalUrl = new URL(url).pathname;
+    return `${method}
+${canonicalUrl}
+${timestamp}
+${nonceStr}
+${body}
+`;
   }
 }
 
