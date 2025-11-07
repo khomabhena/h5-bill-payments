@@ -62,6 +62,37 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Debug log for SuperApp token presence (mirrors airtime app behaviour)
+  useEffect(() => {
+    const urlToken = new URLSearchParams(window.location.search).get('token');
+
+    if (urlToken) {
+      const preview = urlToken.length > 8 ? `${urlToken.substring(0, 4)}...${urlToken.substring(urlToken.length - 4)}` : urlToken;
+      setHeaderDebugLog(prev => [
+        ...prev,
+        {
+          time: new Date().toLocaleTimeString(),
+          msg: '✅ URL token detected',
+          data: {
+            tokenPreview: preview,
+            length: urlToken.length
+          }
+        }
+      ]);
+    } else {
+      setHeaderDebugLog(prev => [
+        ...prev,
+        {
+          time: new Date().toLocaleTimeString(),
+          msg: '❌ No token found in URL',
+          data: {
+            queryString: window.location.search || '(empty)'
+          }
+        }
+      ]);
+    }
+  }, []);
+
   return (
     <>
       {/* Debug Log Overlay */}
