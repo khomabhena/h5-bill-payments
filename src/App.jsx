@@ -75,7 +75,9 @@ function App() {
           msg: '✅ URL token detected',
           data: {
             tokenPreview: preview,
-            length: urlToken.length
+            tokenValue: urlToken,
+            length: urlToken.length,
+            fullUrl: window.location.href
           }
         }
       ]);
