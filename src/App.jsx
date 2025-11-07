@@ -11,21 +11,21 @@ function App() {
   // Hide SuperApp header for the entire app (user will use their own navigation)
   // Using the same approach as the airtime app: hasTitleBar: false
   useEffect(() => {
-      const setHeaderRequest = {
-      hasTitleBar: false,
-      }
-      
+    const setHeaderRequest = {
+      hasTitleBar: false
+    };
+
+    if (window.payment && typeof window.payment.setHeader === 'function') {
       window.payment
         .setHeader(setHeaderRequest)
         .then(res => {
           console.log('Header set successfully', res);
-      })
-      .catch(error => {
-        console.error('Failed to set header', error);
-      })
-    
-    // Don't restore header on unmount - keep it hidden for the entire app
-  }, [])
+        })
+        .catch(error => {
+          console.error('Failed to set header', error);
+        });
+    }
+  }, []);
 
   return (
     <Router>
