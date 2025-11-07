@@ -157,20 +157,22 @@ const Payment = () => {
 
       // Execute payment flow (PostPayment disabled for now as requested)
       addDebugLog('info', '🏪 Starting payment execution (cashier pull)...');
+      const postToAppleTree = true;
       addDebugLog('info', '📋 Payment options', {
-        postToAppleTree: false,
+        postToAppleTree,
         hasUserInfo: !!userInfo
       });
       
       const paymentResult = await flowManager.executePayment(paymentData, {
-        postToAppleTree: false, // Skip PostPayment for now - will implement later
+        postToAppleTree,
         userInfo: userInfo
       });
       
       addDebugLog('success', '✅ Payment execution completed', {
         success: paymentResult.success,
         transactionId: paymentResult.transactionId,
-        paymentStatus: paymentResult.paymentStatus
+        paymentStatus: paymentResult.paymentStatus,
+        hasAppleTreeResult: !!paymentResult.appleTreeResult
       });
 
       // Navigate to confirmation with payment result
@@ -196,7 +198,7 @@ const Payment = () => {
           cashierResult: paymentResult.cashierResult,
           statusResult: paymentResult.statusResult,
           
-          // AppleTree result (null for now since postToAppleTree is false)
+          // AppleTree result
           appleTreeResult: paymentResult.appleTreeResult
         }
       });

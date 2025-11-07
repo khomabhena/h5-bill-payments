@@ -95,6 +95,10 @@ const Confirmation = () => {
   const appleTreeStatus = appleTreeResult?.status;
   const appleTreeReferenceNumber = appleTreeResult?.referenceNumber;
   const appleTreeMessage = appleTreeResult?.resultMessage || appleTreeResult?.message;
+  const appleTreeDisplayData = appleTreeResult?.displayData || appleTreeResult?.DisplayData || [];
+  const vouchers = appleTreeResult?.vouchers || appleTreeResult?.Vouchers || [];
+  const receiptHTML = appleTreeResult?.receiptHTML || appleTreeResult?.ReceiptHTML || [];
+  const receiptSmses = appleTreeResult?.receiptSmses || appleTreeResult?.ReceiptSmses || [];
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-green-50 to-emerald-50">
@@ -280,6 +284,185 @@ const Confirmation = () => {
                     </p>
                   )}
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* AppleTree Display Data */}
+          {appleTreeDisplayData && appleTreeDisplayData.length > 0 && (
+            <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+              <h3 className="font-bold text-sm text-emerald-800 mb-3">Fulfillment Details</h3>
+              <div className="space-y-2">
+                {appleTreeDisplayData.map((item, index) => {
+                  if (!item.Value || item.Value.trim() === '') {
+                    return null;
+                  }
+                  return (
+                    <div key={`apple-tree-display-${index}`} className="flex flex-col">
+                      <span className="text-xs font-medium text-gray-600 mb-1">{item.Label}</span>
+                      <span className="text-sm text-gray-800 whitespace-pre-line">{item.Value}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Vouchers Display */}
+          {vouchers && vouchers.length > 0 && (
+            <div className="mt-6 bg-white rounded-xl shadow-md p-4 border" style={{borderColor: colors.border.primary}}>
+              <h3 className="font-bold mb-3 text-sm" style={{color: colors.text.primary}}>Voucher Details</h3>
+              <div className="space-y-3">
+                {vouchers.map((voucher, index) => {
+                  const voucherKey = `voucher-${index}`;
+                  const serialKey = `${voucherKey}-serial`;
+                  const codeKey = `${voucherKey}-code`;
+                  const expiryDate = voucher.ExpiryDate ? new Date(voucher.ExpiryDate) : null;
+                  const daysUntilExpiry = expiryDate ? Math.ceil((expiryDate - new Date()) / (1000 * 60 * 60 * 24)) : null;
+
+                  return (
+                    <div key={voucherKey} className="rounded-lg p-4 border" style={{
+                      background: `linear-gradient(to bottom right, ${colors.background.secondary}, ${colors.app.primary})`,
+                      borderColor: colors.border.primary
+                    }}>
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-bold text-sm" style={{color: colors.text.primary}}>Voucher #{index + 1}</h4>
+                        {vouchers.length > 1 && (
+                          <span className="text-xs px-2 py-1 rounded-full" style={{
+                            backgroundColor: colors.state.successLight,
+                            color: colors.text.primary
+                          }}>
+                            {index + 1} of {vouchers.length}
+                          </span>
+                        )}
+                      </div>
+
+                      {voucher.SerialNumber && (
+                        <div className="mb-3">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs font-medium" style={{color: colors.text.secondary}}>Serial Number</span>
+                            <button
+                              onClick={() => copyToClipboard(voucher.SerialNumber, serialKey)}
+                              className="p-1 rounded transition-colors"
+                              style={{backgroundColor: 'transparent'}}
+                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.background.secondary}
+                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                              title="Copy Serial Number"
+                            >
+                              {copiedField === serialKey ? (
+                                <svg className="w-4 h-4" style={{color: colors.state.success}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              ) : (
+                                <svg className="w-4 h-4" style={{color: colors.text.secondary}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                              )}
+                            </button>
+                          </div>
+                          <p className="font-mono font-bold text-sm bg-white px-3 py-2 rounded border" style={{borderColor: colors.border.primary, color: colors.text.primary}}>
+                            {voucher.SerialNumber}
+                          </p>
+                        </div>
+                      )}
+
+                      {voucher.VoucherCode && (
+                        <div className="mb-3">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs font-medium" style={{color: colors.text.secondary}}>Voucher Code</span>
+                            <button
+                              onClick={() => copyToClipboard(voucher.VoucherCode, codeKey)}
+                              className="p-1 rounded transition-colors"
+                              style={{backgroundColor: 'transparent'}}
+                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.background.secondary}
+                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                              title="Copy Voucher Code"
+                            >
+                              {copiedField === codeKey ? (
+                                <svg className="w-4 h-4" style={{color: colors.state.success}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              ) : (
+                                <svg className="w-4 h-4" style={{color: colors.text.secondary}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                              )}
+                            </button>
+                          </div>
+                          <p className="font-mono font-bold text-base bg-white px-3 py-2 rounded border break-all text-center" style={{color: colors.app.primaryDark, borderColor: colors.border.secondary}}>
+                            {voucher.VoucherCode}
+                          </p>
+                        </div>
+                      )}
+
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        {voucher.ValidDays && (
+                          <div className="bg-white rounded px-2 py-1 border" style={{borderColor: colors.border.primary}}>
+                            <span style={{color: colors.text.secondary}}>Valid for:</span>
+                            <span className="font-semibold ml-1" style={{color: colors.text.primary}}>{voucher.ValidDays} days</span>
+                          </div>
+                        )}
+                        {expiryDate && (
+                          <div className="bg-white rounded px-2 py-1 border" style={{borderColor: colors.border.primary}}>
+                            <span style={{color: colors.text.secondary}}>Expires:</span>
+                            <span className="font-semibold ml-1" style={{
+                              color: daysUntilExpiry !== null && daysUntilExpiry < 7 ? colors.state.error : colors.text.primary
+                            }}>
+                              {expiryDate.toLocaleDateString()}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {daysUntilExpiry !== null && daysUntilExpiry >= 0 && (
+                        <div className="mt-2 text-xs text-center">
+                          <span className="font-medium" style={{
+                            color: daysUntilExpiry < 7 
+                              ? colors.state.error 
+                              : daysUntilExpiry < 30 
+                                ? colors.state.warning 
+                                : colors.state.success
+                          }}>
+                            {daysUntilExpiry === 0 
+                              ? 'Expires today' 
+                              : daysUntilExpiry === 1 
+                                ? 'Expires tomorrow'
+                                : `Expires in ${daysUntilExpiry} days`}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Receipt HTML Display */}
+          {receiptHTML && receiptHTML.length > 0 && (
+            <div className="mt-6 bg-white rounded-xl shadow-md p-4 border" style={{borderColor: colors.border.secondary}}>
+              <h3 className="font-bold mb-3 text-sm" style={{color: colors.text.primary}}>Receipt</h3>
+              <div className="space-y-4">
+                {receiptHTML.map((html, index) => (
+                  <div key={`receipt-${index}`} className="border rounded-lg p-4 bg-gray-50" style={{borderColor: colors.border.primary}}>
+                    <div dangerouslySetInnerHTML={{ __html: html }} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Receipt SMS Display */}
+          {receiptSmses && receiptSmses.length > 0 && (
+            <div className="mt-6 bg-white rounded-xl shadow-md p-4 border" style={{borderColor: colors.border.secondary}}>
+              <h3 className="font-bold mb-3 text-sm" style={{color: colors.text.primary}}>Receipt SMS</h3>
+              <div className="space-y-2">
+                {receiptSmses.map((sms, index) => (
+                  <div key={`sms-${index}`} className="p-3 bg-gray-50 rounded border" style={{borderColor: colors.border.primary}}>
+                    <p className="text-xs text-gray-600 mb-1">Message #{index + 1}</p>
+                    <p className="text-sm text-gray-800 whitespace-pre-line">{sms}</p>
+                  </div>
+                ))}
               </div>
             </div>
           )}
