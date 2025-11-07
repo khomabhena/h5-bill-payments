@@ -10,7 +10,10 @@ export const useUserAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const userService = new UserService();
+  if (!window.__userServiceInstance) {
+    window.__userServiceInstance = new UserService();
+  }
+  const userService = window.__userServiceInstance;
 
   const getStoredToken = () => {
     const urlToken = new URLSearchParams(window.location.search).get('token');
