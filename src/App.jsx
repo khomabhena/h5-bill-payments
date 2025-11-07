@@ -10,6 +10,32 @@ import Confirmation from './pages/Confirmation';
 function App() {
   const [headerDebugLog, setHeaderDebugLog] = useState([]);
 
+  // Expose a global logger so non-React modules (e.g. UserService) can push to the debug UI
+  useEffect(() => {
+    const logFn = (message, data = null, level = 'info') => {
+      setHeaderDebugLog(prev => [
+        ...prev,
+        {
+          time: new Date().toLocaleTimeString(),
+          msg: `${level === 'error' ? '❌' : level === 'warn' ? '⚠️' : 'ℹ️'} ${message}`,
+          data
+        }
+      ]);
+    };
+
+    try {
+      window.__superAppLog = logFn;
+    } catch (error) {
+      console.error('Failed to attach global SuperApp logger', error);
+    }
+
+    return () => {
+      if (window.__superAppLog === logFn) {
+        delete window.__superAppLog;
+      }
+    };
+  }, []);
+
   // Hide SuperApp header for the entire app (user will use their own navigation)
   // Using the same approach as the airtime app: hasTitleBar: false
   useEffect(() => {

@@ -9,6 +9,18 @@ export class UserService {
     this.appId = config.appId || 'AE35182511050000001000105000';
     this.serialNo = config.serialNo || 'p6TTL7DWcA';
     this.appSecretKey = config.appSecretKey || 'MoTtljN1P66E2rZ/sDwj3g==';
+
+    this.debugLog('UserService initialized with credentials', {
+      baseUrl: this.baseUrl,
+      appId: this.appId,
+      serialNo: this.serialNo
+    });
+  }
+
+  debugLog(message, data = {}, level = 'info') {
+    if (typeof window !== 'undefined' && typeof window.__superAppLog === 'function') {
+      window.__superAppLog(message, data, level);
+    }
   }
 
   /**
@@ -48,10 +60,23 @@ export class UserService {
       console.log('🔍 AppId:', this.appId);
       console.log('🔍 SerialNo:', this.serialNo);
       console.log('🔍 BaseUrl:', this.baseUrl);
+
+      this.debugLog('OpenId request prepared', {
+        url,
+        body: { token },
+        appId: this.appId,
+        serialNo: this.serialNo
+      });
       
       // Generate AES signature
       const signatureInfo = await this.generateSignature('POST', url, body);
       console.log('🔍 Generated signature:', signatureInfo);
+      this.debugLog('OpenId signature generated', {
+        nonceStr: signatureInfo.nonceStr,
+        timestamp: signatureInfo.timestamp,
+        signature: signatureInfo.signature,
+        authorization: signatureInfo.authorization
+      });
       
       const response = await fetch(url, {
         method: 'POST',
@@ -78,6 +103,7 @@ export class UserService {
 
       const data = await response.json();
       console.log('🔍 Response data:', data);
+      this.debugLog('OpenId response received', data);
       
       // Check for openId in the actual response structure
       const openId = data.openId;
@@ -93,6 +119,11 @@ export class UserService {
       return openId;
     } catch (error) {
       console.error('❌ Error getting openId:', error);
+      this.debugLog('OpenId request failed', {
+        message: error?.message,
+        name: error?.name,
+        stack: error?.stack
+      }, 'error');
       throw new Error(`Failed to get openId: ${error.message}`);
     }
   }
@@ -113,10 +144,23 @@ export class UserService {
       console.log('🔍 AuthToken (first 10 chars):', authToken.substring(0, 10) + '...');
       console.log('🔍 OpenId:', openId);
       console.log('🔍 AppId:', this.appId);
+
+      this.debugLog('User info request prepared', {
+        url,
+        appId: this.appId,
+        serialNo: this.serialNo,
+        body: { openId, authToken }
+      });
       
       // Generate AES signature
       const signatureInfo = await this.generateSignature('POST', url, body);
       console.log('🔍 Generated signature for user info:', signatureInfo);
+      this.debugLog('User info signature generated', {
+        nonceStr: signatureInfo.nonceStr,
+        timestamp: signatureInfo.timestamp,
+        signature: signatureInfo.signature,
+        authorization: signatureInfo.authorization
+      });
       
       const response = await fetch(url, {
         method: 'POST',
@@ -138,6 +182,7 @@ export class UserService {
 
       const data = await response.json();
       console.log('🔍 Response data:', data);
+      this.debugLog('User info response received', data);
       
       if (data.code !== 'SUC' || !data.msisdn) {
         console.error('❌ Invalid response format:', data);
@@ -150,6 +195,11 @@ export class UserService {
       return data;
     } catch (error) {
       console.error('❌ Error getting user info:', error);
+      this.debugLog('User info request failed', {
+        message: error?.message,
+        name: error?.name,
+        stack: error?.stack
+      }, 'error');
       throw new Error(`Failed to get user info: ${error.message}`);
     }
   }
@@ -218,6 +268,13 @@ export class UserService {
     
     // Generate AES-GCM signature
     const signature = await this.sign(message, this.appSecretKey);
+    this.debugLog('AES signature generated', {
+      canonicalUrl,
+      timestamp,
+      nonceStr,
+      message,
+      signature
+    });
     
     return {
       authorization: `AES appid="${this.appId}",serial_no="${this.serialNo}",nonce_str="${nonceStr}",timestamp="${timestamp}",signature="${signature}"`,
@@ -279,6 +336,11 @@ export class UserService {
       return this.bytesToBase64(combined);
     } catch (error) {
       console.error('AES signing failed:', error);
+      this.debugLog('AES signing failed', {
+        message: error?.message,
+        name: error?.name,
+        stack: error?.stack
+      }, 'error');
       throw new Error('Failed to generate signature');
     }
   }
