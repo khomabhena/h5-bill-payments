@@ -11,3 +11,10 @@ export { default as BillPaymentFlowManager } from './BillPaymentFlowManager.js';
 export { default as StatusService, ORDER_STATUS, queryPaymentStatus } from './statusService.js';
 export { UserService } from './UserService.js';
 
+export const PaymentStatus = {
+  SUCCESS: 'SUCCESS',
+  PROCESSING: 'PROCESSING',
+  CLOSED: 'CLOSED',
+  FAIL: 'FAIL'
+};
+
