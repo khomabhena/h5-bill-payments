@@ -15,9 +15,9 @@ function App() {
       hasTitleBar: false
     };
 
-    if (window.payment && typeof window.payment.close === 'function') {
+    if (window.payment && typeof window.payment.setHeader === 'function') {
       window.payment
-        .close(setHeaderRequest)
+        .setHeader(setHeaderRequest)
         .then(res => {
           console.log('Header set successfully', res);
         })
