@@ -23,6 +23,7 @@ function App() {
 
       if (window.payment && typeof window.payment.setHeader === 'function') {
         setHeaderDebugLog(prev => [...prev, { time: new Date().toLocaleTimeString(), msg: '✅ window.payment.setHeader is available' }]);
+        setHeaderDebugLog(prev => [...prev, { time: new Date().toLocaleTimeString(), msg: '📋 Request payload', data: setHeaderRequest }]);
         
         window.payment
           .setHeader(setHeaderRequest)
@@ -31,8 +32,26 @@ function App() {
             console.log('✅ Header hidden successfully', res);
           })
           .catch(error => {
-            setHeaderDebugLog(prev => [...prev, { time: new Date().toLocaleTimeString(), msg: '❌ Failed to hide header', data: error }]);
+            // Detailed error logging
+            const errorDetails = {
+              message: error?.message || error?.msg || 'Unknown error',
+              code: error?.code || 'NO_CODE',
+              name: error?.name || 'Error',
+              fullError: JSON.stringify(error),
+              errorType: error?.constructor?.name || 'Unknown',
+              isPermissionError: error?.message?.toLowerCase()?.includes('permission') || 
+                                 error?.message?.toLowerCase()?.includes('denied')
+            };
+            setHeaderDebugLog(prev => [...prev, { time: new Date().toLocaleTimeString(), msg: '❌ PERMISSION DENIED or Error', data: errorDetails }]);
             console.error('❌ Failed to hide header', error);
+            
+            // Try alternative: just check if it's a permission issue
+            if (errorDetails.isPermissionError) {
+              setHeaderDebugLog(prev => [...prev, { 
+                time: new Date().toLocaleTimeString(), 
+                msg: '⚠️ This may be a SuperApp configuration issue. The mini app may not have permission to hide the header.' 
+              }]);
+            }
           });
       } else {
         setHeaderDebugLog(prev => [...prev, { time: new Date().toLocaleTimeString(), msg: '⚠️ window.payment.setHeader not available - SuperApp SDK may not be loaded' }]);
