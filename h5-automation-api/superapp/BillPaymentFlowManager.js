@@ -59,8 +59,13 @@ class BillPaymentFlowManager {
    */
   async initialize() {
     try {
-      this.log('info', '🔧 Initializing SuperAppPayment class...');
-      this.superApp = new SuperAppPayment({ logger: this.logCallback });
+      this.log('info', '🔧 Initializing SuperAppPayment class with Bill Payments credentials...');
+      this.superApp = new SuperAppPayment({
+        logger: this.logCallback,
+        appId: 'AE35182511050000001000105000',
+        serialNo: 'p6TTL7DWcA',
+        merchantId: 'MG3518zo1Wd0XlXZzn'
+      });
       this.log('success', '✅ SuperAppPayment initialized');
 
       // Initialize AppleTree Gateway for PostPayment
