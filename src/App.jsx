@@ -68,6 +68,13 @@ function App() {
 
     if (urlToken) {
       const preview = urlToken.length > 8 ? `${urlToken.substring(0, 4)}...${urlToken.substring(urlToken.length - 4)}` : urlToken;
+
+      try {
+        sessionStorage.setItem('superapp_token', urlToken);
+      } catch (storageError) {
+        console.warn('⚠️ Unable to persist SuperApp token to sessionStorage', storageError);
+      }
+
       setHeaderDebugLog(prev => [
         ...prev,
         {
@@ -82,13 +89,21 @@ function App() {
         }
       ]);
     } else {
+      let storedToken = null;
+      try {
+        storedToken = sessionStorage.getItem('superapp_token');
+      } catch (storageError) {
+        console.warn('⚠️ Unable to read SuperApp token from sessionStorage', storageError);
+      }
+
       setHeaderDebugLog(prev => [
         ...prev,
         {
           time: new Date().toLocaleTimeString(),
-          msg: '❌ No token found in URL',
+          msg: storedToken ? 'ℹ️ Using stored SuperApp token (URL empty)' : '❌ No token found in URL',
           data: {
-            queryString: window.location.search || '(empty)'
+            queryString: window.location.search || '(empty)',
+            storedTokenPreview: storedToken ? `${storedToken.substring(0, 4)}...${storedToken.substring(storedToken.length - 4)}` : null
           }
         }
       ]);

@@ -12,6 +12,29 @@ export const useUserAuth = () => {
 
   const userService = new UserService();
 
+  const getStoredToken = () => {
+    const urlToken = new URLSearchParams(window.location.search).get('token');
+    if (urlToken) {
+      try {
+        sessionStorage.setItem('superapp_token', urlToken);
+      } catch (storageError) {
+        console.warn('⚠️ Unable to store SuperApp token', storageError);
+      }
+      return urlToken;
+    }
+
+    try {
+      const storedToken = sessionStorage.getItem('superapp_token');
+      if (storedToken) {
+        return storedToken;
+      }
+    } catch (storageError) {
+      console.warn('⚠️ Unable to read stored SuperApp token', storageError);
+    }
+
+    return null;
+  };
+
   /**
    * Get auth token from SuperApp SDK
    */
@@ -47,7 +70,7 @@ export const useUserAuth = () => {
 
     try {
       console.log('🚀 Getting openId from API...');
-      const urlToken = new URLSearchParams(window.location.search).get('token');
+      const urlToken = getStoredToken();
       
       if (!urlToken) {
         throw new Error('No token found in URL');
@@ -81,7 +104,7 @@ export const useUserAuth = () => {
       console.log('🚀 Starting complete user data flow...');
       
       // Get URL token
-      const urlToken = new URLSearchParams(window.location.search).get('token');
+      const urlToken = getStoredToken();
       if (!urlToken) {
         throw new Error('No token found in URL');
       }
