@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Button from '../components/Button';
 import CountryInputField from '../components/CountryInputField';
 import { colors } from '../data/colors';
+import PageWrapper from '../components/PageWrapper';
 import { validatePayment } from '../../h5-automation-api/appletree';
 import AppleTreeGateway from '../../h5-automation-api/appletree/AppleTreeGateway';
 
@@ -243,12 +244,12 @@ const AccountInput = () => {
   const canContinue = hasValidAccount && hasValidAmount;
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-green-50 to-emerald-50">
+    <PageWrapper>
       {/* Header */}
       <Header title={`Enter ${fieldLabel}`} showBackButton={true} />
 
       {/* Main Content Section - White Background */}
-      <div className="bg-white w-full flex-1 flex flex-col">
+      <div className="bg-white w-full flex-1 flex flex-col mt-4 rounded-3xl shadow-sm">
         <div className="px-6 pb-6 flex-1">
           {/* Product Info Display */}
           <div className="mb-6 pt-4">
@@ -299,7 +300,7 @@ const AccountInput = () => {
           {validationError && (
             <div className="mb-4 rounded-lg p-3" style={{ backgroundColor: colors.background.secondary, borderColor: colors.border.primary, borderWidth: '1px', borderStyle: 'solid' }}>
               <div className="flex items-start space-x-2">
-                <svg className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: colors.app.primaryDark }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 mt-0.5 shrink-0" style={{ color: colors.app.primaryDark }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div className="flex-1">
@@ -407,7 +408,7 @@ const AccountInput = () => {
           <div className="px-6 pb-3">
             <div className="rounded-lg p-3" style={{ backgroundColor: colors.background.secondary, borderColor: colors.border.primary, borderWidth: '1px', borderStyle: 'solid' }}>
               <div className="flex items-start space-x-2">
-                <svg className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: colors.state.warning }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 mt-0.5 shrink-0" style={{ color: colors.state.warning }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
                 <div className="flex-1">
@@ -431,7 +432,7 @@ const AccountInput = () => {
           </Button>
         </div>
       </div>
-    </div>
+    </PageWrapper>
   );
 };
 

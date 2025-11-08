@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import ReusableButton from '../components/buttons/ReusableButton';
 import Button from '../components/Button';
+import PageWrapper from '../components/PageWrapper';
 import { getProducts } from '../../h5-automation-api/appletree';
 import { colors } from '../data/colors';
 
@@ -130,12 +131,12 @@ const ProductSelection = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-green-50 to-emerald-50">
+    <PageWrapper>
       {/* Header */}
       <Header title="Select Product" showBackButton={true} />
 
       {/* Main Content Section - White Background */}
-      <div className="bg-white w-full flex-1 flex flex-col">
+      <div className="bg-white w-full flex-1 flex flex-col mt-4 rounded-3xl shadow-sm">
         <div className="px-6 pb-6 flex-1">
           {/* Provider Info Display */}
           <div className="mb-6 pt-4">
@@ -298,7 +299,7 @@ const ProductSelection = () => {
           </Button>
         </div>
       </div>
-    </div>
+    </PageWrapper>
   );
 };
 

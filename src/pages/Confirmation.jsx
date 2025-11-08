@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import Button from '../components/Button';
 import { colors } from '../data/colors';
+import PageWrapper from '../components/PageWrapper';
 
 // Format currency as "USD 10" or "ZAR 23" (currency code first, no decimals)
 const formatCurrencyCode = (amount, currency = 'USD') => {
@@ -101,15 +102,10 @@ const Confirmation = () => {
   const receiptSmses = appleTreeResult?.receiptSmses || appleTreeResult?.ReceiptSmses || [];
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-green-50 to-emerald-50">
+    <PageWrapper>
       {/* Header */}
-      <Header 
-        title={isPaymentSuccessful ? "Payment Successful" : "Payment Status"} 
-        showBackButton={false}
-      />
-      
-      {/* Main Content - White Background */}
-      <div className="bg-white w-full flex-1 flex flex-col">
+      <Header title={isPaymentSuccessful ? "Payment Successful" : "Payment Status"} showBackButton={false} />
+      <div className="bg-white w-full flex-1 flex flex-col mt-4 rounded-3xl shadow-sm">
         <div className="px-6 pb-6 flex-1 overflow-y-auto">
           {/* Success Header */}
           {isPaymentSuccessful && (
@@ -498,7 +494,7 @@ const Confirmation = () => {
           Done
         </Button>
       </div>
-    </div>
+    </PageWrapper>
   );
 };
 

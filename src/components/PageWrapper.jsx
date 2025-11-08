@@ -1,11 +1,11 @@
 import React from 'react';
 
-const PageWrapper = ({ children, className = "" }) => {
+const PageWrapper = ({ children, className = '' }) => {
   return (
-    <div className={`min-h-screen bg-linear-to-br from-green-50 to-emerald-50 flex flex-col ${className}`}>
-      <main className="flex-1 w-full max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50">
+      <div className={`min-h-screen mx-auto flex w-full max-w-4xl flex-col px-4 sm:px-6 lg:px-8 ${className}`}>
         {children}
-      </main>
+      </div>
     </div>
   );
 };

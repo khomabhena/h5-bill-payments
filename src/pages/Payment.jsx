@@ -5,6 +5,8 @@ import Button from '../components/Button';
 import { colors } from '../data/colors';
 import BillPaymentFlowManager from '../../h5-automation-api/superapp/BillPaymentFlowManager';
 import { useUserAuth } from '../hooks/useUserAuth';
+import { formatCurrencyCode } from '../utils/uiUtils.jsx';
+import PageWrapper from '../components/PageWrapper';
 
 // Format currency as "USD 10" or "ZAR 23" (currency code first, no decimals)
 const formatCurrencyCode = (amount, currency = 'USD') => {
@@ -175,12 +177,12 @@ const Payment = () => {
   const accountName = getAccountName();
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-green-50 to-emerald-50">
+    <PageWrapper>
       {/* Header */}
       <Header title="Complete Payment" showBackButton={true} />
       
       {/* Main Content - White Background */}
-      <div className="bg-white w-full flex-1 flex flex-col">
+      <div className="bg-white w-full flex-1 flex flex-col mt-4 rounded-3xl shadow-sm">
         <div className="px-6 pb-6 flex-1">
           {/* Order Summary */}
           <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100 mb-6 mt-4">
@@ -261,7 +263,7 @@ const Payment = () => {
           </Button>
         </div>
       </div>
-    </div>
+    </PageWrapper>
   );
 };
 
