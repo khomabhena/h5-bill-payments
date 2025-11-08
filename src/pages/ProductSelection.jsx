@@ -136,7 +136,7 @@ const ProductSelection = () => {
       <Header title="Select Product" showBackButton={true} />
 
       {/* Main Content Section - White Background */}
-      <div className="bg-white w-full flex-1 flex flex-col mt-4 rounded-3xl shadow-sm">
+      <div className="bg-white w-full flex-1 flex flex-col mt-4 rounded-3xl">
         <div className="px-6 pb-6 flex-1">
           {/* Provider Info Display */}
           <div className="mb-6 pt-4">

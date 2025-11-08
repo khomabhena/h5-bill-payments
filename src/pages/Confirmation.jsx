@@ -105,7 +105,7 @@ const Confirmation = () => {
     <PageWrapper>
       {/* Header */}
       <Header title={isPaymentSuccessful ? "Payment Successful" : "Payment Status"} showBackButton={false} />
-      <div className="bg-white w-full flex-1 flex flex-col mt-4 rounded-3xl shadow-sm">
+      <div className="bg-white w-full flex-1 flex flex-col mt-4 rounded-3xl">
         <div className="px-6 pb-6 flex-1 overflow-y-auto">
           {/* Success Header */}
           {isPaymentSuccessful && (

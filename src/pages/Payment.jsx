@@ -180,7 +180,7 @@ const Payment = () => {
       <Header title="Complete Payment" showBackButton={true} />
       
       {/* Main Content - White Background */}
-      <div className="bg-white w-full flex-1 flex flex-col mt-4 rounded-3xl shadow-sm">
+      <div className="bg-white w-full flex-1 flex flex-col mt-4 rounded-3xl">
         <div className="px-6 pb-6 flex-1">
           {/* Order Summary */}
           <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100 mb-6 mt-4">

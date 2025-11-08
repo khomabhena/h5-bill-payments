@@ -106,6 +106,14 @@ const CountryServiceSelection = () => {
     setSelectedService(service);
   };
 
+  const handleBack = () => {
+    if (window.payment && typeof window.payment.close === 'function') {
+      window.payment.close();
+    } else {
+      navigate(-1);
+    }
+  };
+
   // Filter and sort countries based on search query
   const filteredCountries = useMemo(() => {
     if (!searchQuery.trim()) {
@@ -141,10 +149,10 @@ const CountryServiceSelection = () => {
   return (
     <PageWrapper>
       {/* Header */}
-      <Header title="Bill Payments" showBackButton={true} />
+      <Header title="Bill Payments" showBackButton={true} onBack={handleBack} />
       
       {/* Main Content Section - White Background */}
-      <div className="bg-white w-full flex-1 flex flex-col mt-4 rounded-3xl shadow-sm">
+      <div className="bg-white w-full flex-1 flex flex-col mt-4 rounded-3xl">
         <div className="px-6 pb-6 flex-1">
           {/* Country Selection Section */}
           <div className="mb-6">
