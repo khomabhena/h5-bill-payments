@@ -5,8 +5,15 @@ import Button from '../components/Button';
 import { colors } from '../data/colors';
 import BillPaymentFlowManager from '../../h5-automation-api/superapp/BillPaymentFlowManager';
 import { useUserAuth } from '../hooks/useUserAuth';
-import { formatCurrencyCode } from '../utils/uiUtils.jsx';
 import PageWrapper from '../components/PageWrapper';
+
+// Local currency formatter (code + rounded amount)
+const formatCurrencyDisplay = (amount, currency = 'USD') => {
+  const currencyCode = (currency || 'USD').toUpperCase();
+  const amountValue = typeof amount === 'number' ? amount : parseFloat(amount) || 0;
+  const roundedAmount = Math.round(amountValue);
+  return `${currencyCode} ${roundedAmount}`;
+};
 
 const Payment = () => {
   const navigate = useNavigate();
@@ -199,7 +206,7 @@ const Payment = () => {
               )}
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Amount</span>
-                <span className="font-medium">{formatCurrencyCode(amount, currency)}</span>
+                <span className="font-medium">{formatCurrencyDisplay(amount, currency)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Country</span>
@@ -208,7 +215,7 @@ const Payment = () => {
               <hr className="border-gray-200" />
               <div className="flex justify-between text-base font-bold">
                 <span>Total Price:</span>
-                <span style={{color: colors.app.primaryDark}}>{formatCurrencyCode(amount, currency)}</span>
+                <span style={{color: colors.app.primaryDark}}>{formatCurrencyDisplay(amount, currency)}</span>
               </div>
             </div>
           </div>
@@ -250,7 +257,7 @@ const Payment = () => {
             loading={isProcessing}
             className="w-full"
           >
-            {isProcessing ? 'Processing...' : `Pay ${formatCurrencyCode(amount, currency)}`}
+            {isProcessing ? 'Processing...' : `Pay ${formatCurrencyDisplay(amount, currency)}`}
           </Button>
         </div>
       </div>
