@@ -250,7 +250,7 @@ const AccountInput = () => {
 
       {/* Main Content Section - White Background */}
       <div className="bg-white w-full flex-1 flex flex-col mt-4 rounded-3xl">
-        <div className="px-4 pb-6 sm:px-6 flex-1">
+        <div className="px-6 pb-6 flex-1">
           {/* Product Info Display */}
           <div className="mb-6 pt-4">
             <div className="flex items-center justify-center mb-2">
@@ -422,7 +422,7 @@ const AccountInput = () => {
         )}
 
         {/* Button at Bottom */}
-        <div className="p-4 pb-24 space-y-3 sm:p-6">
+        <div className="px-6 pb-10 space-y-3">
           <Button
             onClick={handleContinue}
             disabled={!canContinue}

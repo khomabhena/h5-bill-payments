@@ -106,7 +106,7 @@ const Confirmation = () => {
       {/* Header */}
       <Header title={isPaymentSuccessful ? "Payment Successful" : "Payment Status"} showBackButton={false} />
       <div className="bg-white w-full flex-1 flex flex-col mt-4 rounded-3xl">
-        <div className="px-4 pb-6 sm:px-6 flex-1 overflow-y-auto">
+        <div className="px-6 pb-6 flex-1 overflow-y-auto">
           {/* Success Header */}
           {isPaymentSuccessful && (
             <div className="text-center mb-6 pt-4">
@@ -486,7 +486,7 @@ const Confirmation = () => {
       </div>
 
       {/* Footer with Done Button */}
-      <div className="p-4 bg-white border-t border-gray-100 sm:p-6">
+      <div className="px-6 pb-10 bg-white border-t border-gray-100 pt-4">
         <Button
           onClick={handleDone}
           className="w-full"
