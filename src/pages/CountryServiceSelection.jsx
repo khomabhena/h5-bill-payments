@@ -153,7 +153,7 @@ const CountryServiceSelection = () => {
       
       {/* Main Content Section - White Background */}
       <div className="bg-white w-full flex-1 flex flex-col mt-4 rounded-3xl">
-        <div className="px-6 pb-6 flex-1">
+        <div className="px-4 pb-6 sm:px-6 flex-1">
           {/* Country Selection Section */}
           <div className="mb-6">
             <p className="text-xs font-medium text-gray-700 mb-3">Select Country</p>
@@ -296,7 +296,7 @@ const CountryServiceSelection = () => {
         </div>
 
         {/* Button at Bottom - Inside White Card */}
-        <div className="p-6 pb-24 space-y-3">
+        <div className="p-4 sm:p-6 space-y-3">
           <Button
             onClick={handleContinue}
             disabled={!selectedCountry || !selectedService}

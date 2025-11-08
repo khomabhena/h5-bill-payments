@@ -181,7 +181,7 @@ const Payment = () => {
       
       {/* Main Content - White Background */}
       <div className="bg-white w-full flex-1 flex flex-col mt-4 rounded-3xl">
-        <div className="px-6 pb-6 flex-1">
+        <div className="px-4 pb-6 sm:px-6 flex-1">
           {/* Order Summary */}
           <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100 mb-6 mt-4">
             <h3 className="font-bold text-gray-800 mb-3 text-sm">Order Summary</h3>
@@ -250,7 +250,7 @@ const Payment = () => {
         </div>
 
         {/* Pay Button - Fixed at Bottom */}
-        <div className="p-6 pb-24">
+        <div className="p-4 pb-24 sm:p-6">
           <Button
             onClick={handlePayment}
             disabled={isProcessing}
