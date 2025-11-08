@@ -8,15 +8,6 @@ import { useUserAuth } from '../hooks/useUserAuth';
 import { formatCurrencyCode } from '../utils/uiUtils.jsx';
 import PageWrapper from '../components/PageWrapper';
 
-// Format currency as "USD 10" or "ZAR 23" (currency code first, no decimals)
-const formatCurrencyCode = (amount, currency = 'USD') => {
-  const currencyCode = (currency || 'USD').toUpperCase();
-  const amountValue = typeof amount === 'number' ? amount : parseFloat(amount) || 0;
-  // Round to whole number and format
-  const roundedAmount = Math.round(amountValue);
-  return `${currencyCode} ${roundedAmount}`;
-};
-
 const Payment = () => {
   const navigate = useNavigate();
   const location = useLocation();
