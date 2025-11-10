@@ -301,6 +301,14 @@ const Confirmation = () => {
                 <p><span className="font-semibold">Vouchers Returned:</span> {vouchers.length}</p>
                 <p><span className="font-semibold">Receipt HTML:</span> {receiptHTML.length}</p>
                 <p><span className="font-semibold">Receipt SMS:</span> {receiptSmses.length}</p>
+                {appleTreeResult._debugInfo?.payload && (
+                  <div className="mt-2">
+                    <p className="font-semibold mb-1">Request Payload:</p>
+                    <pre className="max-h-48 overflow-y-auto rounded-lg bg-white/90 p-2 text-[10px] text-emerald-900">
+                      {JSON.stringify(appleTreeResult._debugInfo.payload, null, 2)}
+                    </pre>
+                  </div>
+                )}
                 <div className="mt-2">
                   <p className="font-semibold mb-1">Raw Response:</p>
                   <pre className="max-h-48 overflow-y-auto rounded-lg bg-white/70 p-2 text-[10px] text-emerald-900">
