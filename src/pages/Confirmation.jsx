@@ -301,6 +301,12 @@ const Confirmation = () => {
                 <p><span className="font-semibold">Vouchers Returned:</span> {vouchers.length}</p>
                 <p><span className="font-semibold">Receipt HTML:</span> {receiptHTML.length}</p>
                 <p><span className="font-semibold">Receipt SMS:</span> {receiptSmses.length}</p>
+                <div className="mt-2">
+                  <p className="font-semibold mb-1">Raw Response:</p>
+                  <pre className="max-h-48 overflow-y-auto rounded-lg bg-white/70 p-2 text-[10px] text-emerald-900">
+                    {JSON.stringify(appleTreeResult, null, 2)}
+                  </pre>
+                </div>
               </div>
             ) : (
               <p className="text-[11px] text-emerald-900">No AppleTree PostPayment response was received for this payment.</p>
