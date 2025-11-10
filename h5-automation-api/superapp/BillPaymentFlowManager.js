@@ -448,7 +448,12 @@ class BillPaymentFlowManager {
           // Post payment to AppleTree
           const appleTreeResult = await this.postPaymentService.postPayment(payload);
           lastResult = appleTreeResult;
-          
+
+          const sanitizedResponse = { ...appleTreeResult };
+          if (sanitizedResponse._debugInfo) {
+            delete sanitizedResponse._debugInfo.responseBody;
+          }
+ 
           // Check if result is successful
           const isSuccess = appleTreeResult.Status === 'SUCCESSFUL';
           const isFailedRepeatable = appleTreeResult.Status === 'FAILEDREPEATABLE' || 
@@ -465,7 +470,7 @@ class BillPaymentFlowManager {
               hasReceiptSmses: !!appleTreeResult.ReceiptSmses
             });
             return {
-              ...appleTreeResult,
+              ...sanitizedResponse,
               success: true,
               status: appleTreeResult.Status,
               referenceNumber: appleTreeResult.ReferenceNumber,
@@ -505,7 +510,7 @@ class BillPaymentFlowManager {
               requestId: appleTreeResult.RequestId
             });
             return {
-              ...appleTreeResult,
+              ...sanitizedResponse,
               success: false,
               status: appleTreeResult.Status,
               resultMessage: appleTreeResult.ResultMessage,
@@ -534,8 +539,13 @@ class BillPaymentFlowManager {
       
       // All retries exhausted - return last result
       if (lastResult) {
+        const sanitizedLast = { ...lastResult };
+        if (sanitizedLast._debugInfo) {
+          delete sanitizedLast._debugInfo.responseBody;
+        }
+
         return {
-          ...lastResult,
+          ...sanitizedLast,
           success: false,
           status: lastResult.Status,
           resultMessage: lastResult.ResultMessage,
