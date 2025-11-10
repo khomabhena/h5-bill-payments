@@ -100,6 +100,7 @@ const Confirmation = () => {
   const vouchers = appleTreeResult?.vouchers || appleTreeResult?.Vouchers || [];
   const receiptHTML = appleTreeResult?.receiptHTML || appleTreeResult?.ReceiptHTML || [];
   const receiptSmses = appleTreeResult?.receiptSmses || appleTreeResult?.ReceiptSmses || [];
+  const appleTreeRequestId = appleTreeResult?.requestId || appleTreeResult?.RequestId;
 
   return (
     <PageWrapper>
@@ -283,6 +284,28 @@ const Confirmation = () => {
               </div>
             </div>
           )}
+
+          {/* PostPayment Debug Log */}
+          <div className="mb-6 rounded-xl border border-dashed border-emerald-300 bg-emerald-50/80 p-4">
+            <p className="text-xs font-semibold text-emerald-900 mb-2">AppleTree PostPayment Debug Log</p>
+            {appleTreeResult ? (
+              <div className="space-y-1 text-[11px] text-emerald-900">
+                <p><span className="font-semibold uppercase">Status:</span> {appleTreeResult.Status || 'N/A'}</p>
+                {appleTreeReferenceNumber && (
+                  <p><span className="font-semibold">Reference:</span> {appleTreeReferenceNumber}</p>
+                )}
+                {appleTreeRequestId && (
+                  <p><span className="font-semibold">RequestId:</span> {appleTreeRequestId}</p>
+                )}
+                <p><span className="font-semibold">Result Message:</span> {appleTreeMessage || 'N/A'}</p>
+                <p><span className="font-semibold">Vouchers Returned:</span> {vouchers.length}</p>
+                <p><span className="font-semibold">Receipt HTML:</span> {receiptHTML.length}</p>
+                <p><span className="font-semibold">Receipt SMS:</span> {receiptSmses.length}</p>
+              </div>
+            ) : (
+              <p className="text-[11px] text-emerald-900">No AppleTree PostPayment response was received for this payment.</p>
+            )}
+          </div>
 
           {/* AppleTree Display Data */}
           {appleTreeDisplayData && appleTreeDisplayData.length > 0 && (
