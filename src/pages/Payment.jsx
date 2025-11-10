@@ -239,23 +239,81 @@ const Payment = () => {
   const currency = product?.Currency || 'USD';
   const accountName = getAccountName();
 
-  const getStatusCardClasses = () => {
-    if (!statusCard) return '';
+  const getStatusCardStyle = () => {
+    if (!statusCard) return {};
     switch (statusCard.tone) {
       case 'fetching':
-        return 'bg-emerald-900 text-emerald-50';
+        return {
+          backgroundColor: colors.app.primaryDark,
+          color: '#ffffff'
+        };
       case 'success':
-        return 'bg-emerald-100 text-emerald-800';
+        return {
+          backgroundColor: colors.app.primaryLight,
+          color: colors.text.primary
+        };
       case 'warning':
-        return 'bg-amber-100 text-amber-800';
+        return {
+          backgroundColor: '#FEF3C7',
+          color: '#92400E'
+        };
       case 'error':
-        return 'bg-red-100 text-red-800';
+        return {
+          backgroundColor: colors.state.errorLight,
+          color: colors.state.error
+        };
       default:
-        return 'bg-emerald-50 text-emerald-800';
+        return {
+          backgroundColor: colors.background.secondary,
+          color: colors.text.primary
+        };
     }
   };
 
   const shouldShowSpinner = statusCard && ['fetching', 'info'].includes(statusCard.tone);
+
+  const renderStatusIcon = () => {
+    if (!statusCard) return null;
+    if (shouldShowSpinner) {
+      return (
+        <span className="mt-1 inline-flex h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
+      );
+    }
+    if (statusCard.tone === 'success') {
+      return (
+        <span className="mt-1 inline-flex h-5 w-5 shrink-0">
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </span>
+      );
+    }
+    if (statusCard.tone === 'warning') {
+      return (
+        <span className="mt-1 inline-flex h-5 w-5 shrink-0">
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </span>
+      );
+    }
+    if (statusCard.tone === 'error') {
+      return (
+        <span className="mt-1 inline-flex h-5 w-5 shrink-0">
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </span>
+      );
+    }
+    return (
+      <span className="mt-1 inline-flex h-5 w-5 shrink-0">
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-3-3v6" />
+        </svg>
+      </span>
+    );
+  };
 
   return (
     <PageWrapper>
@@ -333,17 +391,9 @@ const Payment = () => {
 
           {/* Status Card */}
           {statusCard && (
-            <div className={`mt-4 rounded-2xl p-4 shadow-sm ${getStatusCardClasses()}`}>
+            <div className="mt-4 rounded-2xl p-4 shadow-sm" style={getStatusCardStyle()}>
               <div className="flex items-start space-x-3">
-                {shouldShowSpinner ? (
-                  <span className="mt-1 inline-flex h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
-                ) : (
-                  <span className="mt-1 inline-flex h-5 w-5 shrink-0">
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </span>
-                )}
+                {renderStatusIcon()}
                 <div className="flex-1">
                   <p className="font-semibold text-sm">{statusCard.title}</p>
                   {statusCard.message && (
