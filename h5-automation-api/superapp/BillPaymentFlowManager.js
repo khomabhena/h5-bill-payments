@@ -465,6 +465,7 @@ class BillPaymentFlowManager {
               hasReceiptSmses: !!appleTreeResult.ReceiptSmses
             });
             return {
+              ...appleTreeResult,
               success: true,
               status: appleTreeResult.Status,
               referenceNumber: appleTreeResult.ReferenceNumber,
@@ -473,7 +474,9 @@ class BillPaymentFlowManager {
               vouchers: appleTreeResult.Vouchers || [],
               receiptHTML: appleTreeResult.ReceiptHTML || [],
               receiptSmses: appleTreeResult.ReceiptSmses || [],
-              resultMessage: appleTreeResult.ResultMessage
+              resultMessage: appleTreeResult.ResultMessage,
+              _rawResponse: appleTreeResult,
+              _requestPayload: appleTreeResult._debugInfo?.payload || payload
             }; // Success - return immediately
           } else if (isFailedRepeatable) {
             // Failed but repeatable - retry if attempts remain
@@ -503,11 +506,14 @@ class BillPaymentFlowManager {
               requestId: appleTreeResult.RequestId
             });
             return {
+              ...appleTreeResult,
               success: false,
               status: appleTreeResult.Status,
               resultMessage: appleTreeResult.ResultMessage,
               requestId: appleTreeResult.RequestId,
-              isFailedRepeatable: false
+              isFailedRepeatable: false,
+              _rawResponse: appleTreeResult,
+              _requestPayload: appleTreeResult._debugInfo?.payload || payload
             }; // Return immediately for non-repeatable failures
           }
         } catch (postError) {
@@ -529,10 +535,23 @@ class BillPaymentFlowManager {
       }
       
       // All retries exhausted - return last result
-      return lastResult || { 
-        error: 'All retry attempts failed', 
-        success: false, 
-        isFailedRepeatable: true 
+      if (lastResult) {
+        return {
+          ...lastResult,
+          success: false,
+          status: lastResult.Status,
+          resultMessage: lastResult.ResultMessage,
+          requestId: lastResult.RequestId,
+          isFailedRepeatable: lastResult.Status === 'FAILEDREPEATABLE' || lastResult.Status === 'PROCESSING',
+          _rawResponse: lastResult,
+          _requestPayload: lastResult._debugInfo?.payload
+        };
+      }
+
+      return {
+        error: 'All retry attempts failed',
+        success: false,
+        isFailedRepeatable: true
       };
     } catch (error) {
       this.log('error', '❌ Failed to post payment to AppleTree (non-critical)', {
