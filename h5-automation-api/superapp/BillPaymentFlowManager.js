@@ -475,7 +475,6 @@ class BillPaymentFlowManager {
               receiptHTML: appleTreeResult.ReceiptHTML || [],
               receiptSmses: appleTreeResult.ReceiptSmses || [],
               resultMessage: appleTreeResult.ResultMessage,
-              _rawResponse: appleTreeResult,
               _requestPayload: appleTreeResult._debugInfo?.payload || payload
             }; // Success - return immediately
           } else if (isFailedRepeatable) {
@@ -512,7 +511,6 @@ class BillPaymentFlowManager {
               resultMessage: appleTreeResult.ResultMessage,
               requestId: appleTreeResult.RequestId,
               isFailedRepeatable: false,
-              _rawResponse: appleTreeResult,
               _requestPayload: appleTreeResult._debugInfo?.payload || payload
             }; // Return immediately for non-repeatable failures
           }
@@ -543,7 +541,6 @@ class BillPaymentFlowManager {
           resultMessage: lastResult.ResultMessage,
           requestId: lastResult.RequestId,
           isFailedRepeatable: lastResult.Status === 'FAILEDREPEATABLE' || lastResult.Status === 'PROCESSING',
-          _rawResponse: lastResult,
           _requestPayload: lastResult._debugInfo?.payload
         };
       }
