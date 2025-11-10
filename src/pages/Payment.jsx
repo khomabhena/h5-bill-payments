@@ -22,6 +22,7 @@ const Payment = () => {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
+  const [statusCard, setStatusCard] = useState(null);
   const { getCompleteUserData, userData, getAuthToken } = useUserAuth();
 
   // Hide SuperApp header
@@ -62,10 +63,56 @@ const Payment = () => {
     
     setIsProcessing(true);
     setError(null);
+    setStatusCard({
+      title: 'Preparing Payment',
+      message: 'Setting up your order, please wait…',
+      tone: 'info'
+    });
     
     try {
       // Initialize BillPaymentFlowManager with logging callback
-      const flowManager = new BillPaymentFlowManager();
+      const flowManager = new BillPaymentFlowManager((type, message) => {
+        if (type === 'error') {
+          setStatusCard({
+            title: 'Payment Issue',
+            message: message.replace(/^[^:]+:\s*/, ''),
+            tone: 'error'
+          });
+          return;
+        }
+
+        if (message.includes('Step 1')) {
+          setStatusCard({
+            title: 'Preparing Payment',
+            message: 'Setting up your order, please wait…',
+            tone: 'info'
+          });
+        } else if (message.includes('Step 2')) {
+          setStatusCard({
+            title: 'Awaiting Confirmation',
+            message: 'Complete the payment in the SuperApp cashier.',
+            tone: 'info'
+          });
+        } else if (message.includes('Step 3')) {
+          setStatusCard({
+            title: 'Confirming Payment',
+            message: 'Checking the status of your payment…',
+            tone: 'info'
+          });
+        } else if (message.includes('Step 4')) {
+          setStatusCard({
+            title: 'Fetching Voucher/Bundle',
+            message: 'Please wait while we retrieve your voucher details…',
+            tone: 'fetching'
+          });
+        } else if (message.includes('AppleTree postPayment completed successfully')) {
+          setStatusCard({
+            title: 'Voucher Ready',
+            message: 'We have successfully retrieved your voucher.',
+            tone: 'success'
+          });
+        }
+      });
 
       // Prepare payment data
       const paymentData = {
@@ -150,14 +197,32 @@ const Payment = () => {
         // Provide more specific error messages
         if (error.message.includes('timeout')) {
           errorMessage = 'Payment request timed out. Please try again.';
+          setStatusCard({
+            title: 'Payment Timeout',
+            message: 'The payment took too long. Please try again.',
+            tone: 'error'
+          });
         } else if (error.message.includes('window.payment')) {
           errorMessage = 'Payment system is not available. Please ensure you are using the SuperApp.';
+          setStatusCard({
+            title: 'Payment Unavailable',
+            message: 'The SuperApp payment system is not available right now.',
+            tone: 'error'
+          });
         } else if (error.message.includes('cancelled') || error.message.includes('cancel')) {
           errorMessage = 'Payment was cancelled.';
+          setStatusCard({
+            title: 'Payment Cancelled',
+            message: 'You cancelled the payment. Please try again if this was unintentional.',
+            tone: 'warning'
+          });
         } else if (error.message.includes('denied') || error.message.includes('permission')) {
           errorMessage = 'Payment was denied. Please check your payment settings.';
-        } else if (error.message.includes('cashier')) {
-          errorMessage = '🔴 Cashier error detected';
+          setStatusCard({
+            title: 'Payment Denied',
+            message: 'The payment was denied. Please check your payment settings.',
+            tone: 'error'
+          });
         }
       }
       
@@ -173,6 +238,24 @@ const Payment = () => {
 
   const currency = product?.Currency || 'USD';
   const accountName = getAccountName();
+
+  const getStatusCardClasses = () => {
+    if (!statusCard) return '';
+    switch (statusCard.tone) {
+      case 'fetching':
+        return 'bg-emerald-900 text-emerald-50';
+      case 'success':
+        return 'bg-emerald-100 text-emerald-800';
+      case 'warning':
+        return 'bg-amber-100 text-amber-800';
+      case 'error':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-emerald-50 text-emerald-800';
+    }
+  };
+
+  const shouldShowSpinner = statusCard && ['fetching', 'info'].includes(statusCard.tone);
 
   return (
     <PageWrapper>
@@ -247,6 +330,29 @@ const Payment = () => {
               </div>
             </div>
           </div>
+
+          {/* Status Card */}
+          {statusCard && (
+            <div className={`mt-4 rounded-2xl p-4 shadow-sm ${getStatusCardClasses()}`}>
+              <div className="flex items-start space-x-3">
+                {shouldShowSpinner ? (
+                  <span className="mt-1 inline-flex h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
+                ) : (
+                  <span className="mt-1 inline-flex h-5 w-5 shrink-0">
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </span>
+                )}
+                <div className="flex-1">
+                  <p className="font-semibold text-sm">{statusCard.title}</p>
+                  {statusCard.message && (
+                    <p className="text-xs mt-1 opacity-80">{statusCard.message}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Pay Button - Fixed at Bottom */}
