@@ -126,6 +126,34 @@ const Payment = () => {
         validationData
       };
 
+      const forcedPostPaymentPayload = {
+        RequestId: '3fa83f64-5718-0042-b3fc-2c963f35afa6',
+        PaymentChannel: 'SuperApp',
+        PaymentReferenceNumber: 'string',
+        ProductId: 'ES_ZETDC_PREPAID_USD',
+        BillReferenceNumber: null,
+        Quantity: '1',
+        Currency: 'USD',
+        Amount: 2.0,
+        CustomerDetails: {
+          CustomerId: '1',
+          Fullname: 'Ty',
+          MobileNumber: '+26379325860',
+          EmailAddress: 'string'
+        },
+        CreditPartyIdentifiers: [
+          {
+            IdentifierFieldName: 'MemberNumber',
+            IdentifierFieldValue: '+26379325860'
+          }
+        ],
+        POSDetails: {
+          StoreId: 'SuperApp',
+          TerminalId: 'SuperApp',
+          CashierId: 'SuperApp'
+        }
+      };
+
       // Get user info if available (optional - will use defaults if not available)
       // Using the recommended approach from SUPERAPP_USERINFO_AND_CASHIER_GUIDE.md
       let userInfo = null;
@@ -158,7 +186,8 @@ const Payment = () => {
       
       const paymentResult = await flowManager.executePayment(paymentData, {
         postToAppleTree,
-        userInfo: userInfo
+        userInfo: userInfo,
+        postPaymentPayload: forcedPostPaymentPayload
       });
  
       const fulfillmentStatus = paymentResult.appleTreeResult?.Status;

@@ -414,7 +414,7 @@ class BillPaymentFlowManager {
    * Step 4: Post payment to AppleTree (for bill payment fulfillment)
    * Only called if payment status is SUCCESS
    */
-  async postPaymentToAppleTree(transactionId, paymentData, userInfo = null) {
+  async postPaymentToAppleTree(transactionId, paymentData, userInfo = null, overridePayload = null) {
     try {
       // Only proceed if PostPayment service is initialized
       if (!this.postPaymentService) {
@@ -435,7 +435,7 @@ class BillPaymentFlowManager {
         // Build the payload for bill payments
         // IMPORTANT: Always generate a NEW unique RequestId for each call
         // Each payment attempt (including retries) must have a unique RequestId.
-        const payload = this.buildPostPaymentPayload(paymentData, transactionId, userInfo);
+        const payload = overridePayload ? { ...overridePayload } : this.buildPostPaymentPayload(paymentData, transactionId, userInfo);
         
         // Log the generated RequestId for this attempt
         this.log('info', `🔑 Generated new RequestId for attempt ${attempt}:`, payload.RequestId);
@@ -615,7 +615,8 @@ class BillPaymentFlowManager {
         appleTreeResult = await this.postPaymentToAppleTree(
           paymentResult.outBizId,
           paymentData,
-          options.userInfo || null
+          options.userInfo || null,
+          options.postPaymentPayload || null
         );
       }
       
