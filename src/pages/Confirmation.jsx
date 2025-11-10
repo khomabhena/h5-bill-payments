@@ -189,6 +189,12 @@ const Confirmation = () => {
                   <span className="font-medium">{product.Name || 'N/A'}</span>
                 </div>
               )}
+              {product?.Id && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Product ID</span>
+                  <span className="font-medium">{product.Id}</span>
+                </div>
+              )}
               {accountValue && (
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Account Number</span>
