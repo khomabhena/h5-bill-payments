@@ -160,6 +160,34 @@ const Payment = () => {
         userInfo: userInfo
       });
  
+      if (paymentResult.paymentStatus === 'SUCCESS' && paymentResult.appleTreeResult?.Status === 'SUCCESSFUL') {
+        setStatusCard({
+          title: 'Voucher Ready',
+          message: 'We have successfully retrieved your voucher.',
+          tone: 'success'
+        });
+      } else if (paymentResult.appleTreeResult?.Status === 'FAILEDREPEATABLE') {
+        setStatusCard({
+          title: 'Fulfillment Pending',
+          message: paymentResult.appleTreeResult.ResultMessage || 'Request processing timed out.',
+          tone: 'warning'
+        });
+      } else if (paymentResult.appleTreeResult?.Status === 'FAILED') {
+        setStatusCard({
+          title: 'Fulfillment Failed',
+          message: paymentResult.appleTreeResult.ResultMessage || 'Failed to process your request. Please retry later.',
+          tone: 'error'
+        });
+      }
+
+      if (!paymentResult.appleTreeResult) {
+        setStatusCard({
+          title: 'Voucher Pending',
+          message: 'Waiting for fulfillment response…',
+          tone: 'warning'
+        });
+      }
+
       // Navigate to confirmation with payment result
       navigate('/confirmation', {
         state: {
