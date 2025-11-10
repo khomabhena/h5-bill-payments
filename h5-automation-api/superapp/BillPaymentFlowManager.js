@@ -414,7 +414,7 @@ class BillPaymentFlowManager {
    * Step 4: Post payment to AppleTree (for bill payment fulfillment)
    * Only called if payment status is SUCCESS
    */
-  async postPaymentToAppleTree(transactionId, paymentData, userInfo = null, overridePayload = null) {
+  async postPaymentToAppleTree(transactionId, paymentData, userInfo = null) {
     try {
       // Only proceed if PostPayment service is initialized
       if (!this.postPaymentService) {
@@ -435,7 +435,7 @@ class BillPaymentFlowManager {
         // Build the payload for bill payments
         // IMPORTANT: Always generate a NEW unique RequestId for each call
         // Each payment attempt (including retries) must have a unique RequestId.
-        const payload = overridePayload ? { ...overridePayload } : this.buildPostPaymentPayload(paymentData, transactionId, userInfo);
+        const payload = this.buildPostPaymentPayload(paymentData, transactionId, userInfo);
         
         // Log the generated RequestId for this attempt
         this.log('info', `🔑 Generated new RequestId for attempt ${attempt}:`, payload.RequestId);
@@ -449,11 +449,6 @@ class BillPaymentFlowManager {
           const appleTreeResult = await this.postPaymentService.postPayment(payload);
           lastResult = appleTreeResult;
 
-          const sanitizedResponse = { ...appleTreeResult };
-          if (sanitizedResponse._debugInfo) {
-            delete sanitizedResponse._debugInfo.responseBody;
-          }
- 
           // Check if result is successful
           const isSuccess = appleTreeResult.Status === 'SUCCESSFUL';
           const isFailedRepeatable = appleTreeResult.Status === 'FAILEDREPEATABLE' || 
@@ -469,6 +464,10 @@ class BillPaymentFlowManager {
               hasReceiptHTML: !!appleTreeResult.ReceiptHTML,
               hasReceiptSmses: !!appleTreeResult.ReceiptSmses
             });
+            const sanitizedResponse = { ...appleTreeResult };
+            if (sanitizedResponse._debugInfo) {
+              delete sanitizedResponse._debugInfo.responseBody;
+            }
             return {
               ...sanitizedResponse,
               success: true,
@@ -509,6 +508,10 @@ class BillPaymentFlowManager {
               message: appleTreeResult.ResultMessage || appleTreeResult.error,
               requestId: appleTreeResult.RequestId
             });
+            const sanitizedResponse = { ...appleTreeResult };
+            if (sanitizedResponse._debugInfo) {
+              delete sanitizedResponse._debugInfo.responseBody;
+            }
             return {
               ...sanitizedResponse,
               success: false,
@@ -615,8 +618,7 @@ class BillPaymentFlowManager {
         appleTreeResult = await this.postPaymentToAppleTree(
           paymentResult.outBizId,
           paymentData,
-          options.userInfo || null,
-          options.postPaymentPayload || null
+          options.userInfo || null
         );
       }
       
