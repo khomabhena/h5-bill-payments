@@ -23,8 +23,8 @@ const Payment = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
   const [statusCard, setStatusCard] = useState(null);
-  const [postPaymentDebug, setPostPaymentDebug] = useState(null);
-  const { getCompleteUserData, userData, getAuthToken } = useUserAuth();
+  const [postPaymentInfo, setPostPaymentInfo] = useState(null);
+  const { getCompleteUserData } = useUserAuth();
 
   // Hide SuperApp header
   useEffect(() => {
@@ -69,6 +69,7 @@ const Payment = () => {
       message: 'Setting up your order, please wait…',
       tone: 'info'
     });
+    setPostPaymentInfo(null);
     
     try {
       // Initialize BillPaymentFlowManager with logging callback
@@ -102,15 +103,33 @@ const Payment = () => {
           });
         } else if (message.includes('Step 4')) {
           setStatusCard({
-            title: 'Fetching Voucher/Bundle',
-            message: 'Please wait while we retrieve your voucher details…',
+            title: 'Fetching Voucher',
+            message: 'Completing your purchase, please hold on…',
             tone: 'fetching'
           });
-        } else if (message.includes('AppleTree postPayment completed successfully')) {
+        } else if (message.includes('PostPayment succeeded')) {
           setStatusCard({
             title: 'Voucher Ready',
-            message: 'We have successfully retrieved your voucher.',
+            message: 'We have successfully retrieved your voucher details.',
             tone: 'success'
+          });
+        } else if (message.includes('PostPayment returned FAILEDREPEATABLE')) {
+          setStatusCard({
+            title: 'Fulfillment Pending',
+            message: 'The biller reported this transaction as duplicate or still processing. Please retry shortly.',
+            tone: 'warning'
+          });
+        } else if (message.includes('PostPayment failed')) {
+          setStatusCard({
+            title: 'Fulfillment Failed',
+            message: 'We could not retrieve fulfillment details. Please contact support if charges persist.',
+            tone: 'error'
+          });
+        } else if (message.includes('PostPayment error')) {
+          setStatusCard({
+            title: 'Fulfillment Error',
+            message: 'We encountered an error retrieving the voucher. Please try again later.',
+            tone: 'error'
           });
         }
       });
@@ -153,59 +172,69 @@ const Payment = () => {
       }
       
       
-      // Execute payment flow (PostPayment disabled for now as requested)
-      const postToAppleTree = true;
-      
       const paymentResult = await flowManager.executePayment(paymentData, {
-        postToAppleTree,
         userInfo: userInfo
       });
- 
-      const fulfillmentStatus = paymentResult.appleTreeResult?.Status;
 
-      if (paymentResult.paymentStatus === 'SUCCESS' && fulfillmentStatus === 'SUCCESSFUL') {
+      const postPaymentResult = paymentResult.postPaymentResult || null;
+
+      if (paymentResult.paymentStatus === 'SUCCESS') {
         setStatusCard({
-          title: 'Voucher Ready',
-          message: 'We have successfully retrieved your voucher.',
+          title: 'Payment Complete',
+          message: 'Your payment has been processed successfully.',
           tone: 'success'
         });
-        setPostPaymentDebug({
-          status: fulfillmentStatus,
-          message: paymentResult.appleTreeResult.ResultMessage,
-          reference: paymentResult.appleTreeResult.ReferenceNumber,
-          requestId: paymentResult.appleTreeResult.RequestId
-        });
-      } else if (fulfillmentStatus === 'FAILEDREPEATABLE') {
+      } else if (paymentResult.paymentStatus === 'FAILED') {
         setStatusCard({
-          title: 'Fulfillment Pending',
-          message: paymentResult.appleTreeResult.ResultMessage || 'Request processing timed out.',
-          tone: 'warning'
-        });
-        setPostPaymentDebug({
-          status: fulfillmentStatus,
-          message: paymentResult.appleTreeResult.ResultMessage,
-          requestId: paymentResult.appleTreeResult.RequestId
-        });
-      } else if (fulfillmentStatus === 'FAILED') {
-        setStatusCard({
-          title: 'Fulfillment Failed',
-          message: paymentResult.appleTreeResult.ResultMessage || 'Failed to process your request. Please retry later.',
+          title: 'Payment Failed',
+          message: 'We could not complete your payment. Please try again later.',
           tone: 'error'
         });
-        setPostPaymentDebug({
-          status: fulfillmentStatus,
-          message: paymentResult.appleTreeResult.ResultMessage,
-          requestId: paymentResult.appleTreeResult.RequestId
+      } else if (paymentResult.paymentStatus) {
+        setStatusCard({
+          title: 'Payment Status',
+          message: `Current status: ${paymentResult.paymentStatus}`,
+          tone: 'warning'
         });
       }
 
-      if (!paymentResult.appleTreeResult) {
-        setStatusCard({
-          title: 'Voucher Pending',
-          message: 'Waiting for fulfillment response…',
-          tone: 'warning'
+      if (postPaymentResult) {
+        setPostPaymentInfo({
+          status: postPaymentResult.status,
+          resultMessage: postPaymentResult.resultMessage,
+          referenceNumber: postPaymentResult.referenceNumber,
+          requestId: postPaymentResult.requestId,
+          vouchers: postPaymentResult.vouchers,
+          receiptHTML: postPaymentResult.receiptHTML,
+          receiptSmses: postPaymentResult.receiptSmses,
+          displayData: postPaymentResult.displayData,
+          success: postPaymentResult.success,
+          isFailedRepeatable: postPaymentResult.isFailedRepeatable,
+          raw: postPaymentResult.raw,
+          _requestPayload: postPaymentResult._requestPayload
         });
-        setPostPaymentDebug(null);
+
+        if (postPaymentResult.success) {
+          setStatusCard({
+            title: 'Voucher Ready',
+            message: 'We have successfully retrieved your voucher details.',
+            tone: 'success'
+          });
+        } else if (postPaymentResult.isFailedRepeatable) {
+          setStatusCard({
+            title: 'Fulfillment Pending',
+            message: postPaymentResult.resultMessage || 'Biller is still processing this request. Please retry shortly.',
+            tone: 'warning'
+          });
+        } else if (postPaymentResult.status) {
+          setStatusCard({
+            title: 'Fulfillment Failed',
+            message: postPaymentResult.resultMessage || 'We could not retrieve fulfillment details. Please contact support if charges persist.',
+            tone: 'error'
+          });
+        }
+      } else {
+        setPostPaymentInfo(null);
       }
 
       // Navigate to confirmation with payment result
@@ -230,9 +259,7 @@ const Payment = () => {
           // Payment flow results
           cashierResult: paymentResult.cashierResult,
           statusResult: paymentResult.statusResult,
-          
-          // AppleTree result
-          appleTreeResult: paymentResult.appleTreeResult
+          postPaymentResult
         }
       });
     } catch (error) {
@@ -275,6 +302,7 @@ const Payment = () => {
       }
       
       setError(errorMessage);
+      setPostPaymentInfo(null);
     } finally {
       setIsProcessing(false);
     }
@@ -456,23 +484,27 @@ const Payment = () => {
             </div>
           )}
 
-          {postPaymentDebug && (
+          {postPaymentInfo && (
             <div className="mt-4 rounded-xl border border-dashed border-emerald-300 bg-emerald-50/60 p-4">
-              <p className="text-xs font-semibold text-emerald-900 mb-2">AppleTree PostPayment Response</p>
+              <p className="text-xs font-semibold text-emerald-900 mb-2">Fulfillment Details</p>
               <div className="space-y-1 text-[11px] text-emerald-900">
-                <p><span className="font-semibold uppercase">Status:</span> {postPaymentDebug.status || 'N/A'}</p>
-                {postPaymentDebug.reference && (
-                  <p><span className="font-semibold">Reference:</span> {postPaymentDebug.reference}</p>
+                <p><span className="font-semibold uppercase">Status:</span> {postPaymentInfo.status || 'N/A'}</p>
+                {postPaymentInfo.referenceNumber && (
+                  <p><span className="font-semibold">Reference:</span> {postPaymentInfo.referenceNumber}</p>
                 )}
-                {postPaymentDebug.requestId && (
-                  <p><span className="font-semibold">RequestId:</span> {postPaymentDebug.requestId}</p>
+                {postPaymentInfo.requestId && (
+                  <p><span className="font-semibold">RequestId:</span> {postPaymentInfo.requestId}</p>
                 )}
-                {postPaymentDebug.message && (
-                  <p className="pt-1"><span className="font-semibold">Message:</span> {postPaymentDebug.message}</p>
+                {postPaymentInfo.resultMessage && (
+                  <p className="pt-1"><span className="font-semibold">Message:</span> {postPaymentInfo.resultMessage}</p>
+                )}
+                {postPaymentInfo.vouchers && postPaymentInfo.vouchers.length > 0 && (
+                  <p><span className="font-semibold">Voucher Count:</span> {postPaymentInfo.vouchers.length}</p>
                 )}
               </div>
             </div>
           )}
+
         </div>
 
         {/* Pay Button - Fixed at Bottom */}

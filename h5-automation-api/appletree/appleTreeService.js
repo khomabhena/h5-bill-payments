@@ -5,6 +5,7 @@
  */
 
 import AppleTreeGateway from './AppleTreeGateway.js';
+import { validateBillPayment, postBillPayment } from './billPaymentsApi.js';
 
 // Create gateway instance
 const gateway = new AppleTreeGateway({
@@ -83,10 +84,23 @@ export const getProductById = async (productId) => {
  */
 export const validatePayment = async (paymentData) => {
   try {
-    const response = await gateway.validatePayment(paymentData);
+    const response = await validateBillPayment(paymentData);
     return response;
   } catch (error) {
     console.error('Error validating payment:', error);
+    throw error;
+  }
+};
+
+/**
+ * Post payment for fulfillment
+ */
+export const submitPostPayment = async (paymentData) => {
+  try {
+    const response = await postBillPayment(paymentData);
+    return response;
+  } catch (error) {
+    console.error('Error posting payment:', error);
     throw error;
   }
 };

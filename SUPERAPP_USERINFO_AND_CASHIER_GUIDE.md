@@ -461,15 +461,14 @@ const paymentData = {
 
 // Execute complete payment flow
 const result = await flowManager.executePayment(paymentData, {
-  postToAppleTree: false,  // Set to true to enable PostPayment API
-  userInfo: userInfo  // Optional: user info for PostPayment
+  userInfo: userInfo  // Optional: user info for fulfillment integration
 });
 
 // Access cashier result
 console.log('Cashier Result:', result.cashierResult);
 console.log('Payment Status:', result.paymentStatus);
 console.log('Transaction ID:', result.transactionId);
-console.log('AppleTree Result:', result.appleTreeResult);  // If postToAppleTree is true
+console.log('PostPayment Result:', result.postPaymentResult);
 ```
 
 **Location:** `h5-automation-api/superapp/BillPaymentFlowManager.js` (line 534)
@@ -502,8 +501,8 @@ console.log('AppleTree Result:', result.appleTreeResult);  // If postToAppleTree
   paymentResult: { /* prepare payment result */ },
   cashierResult: { /* cashier response */ },
   statusResult: { /* payment status */ },
-  paymentStatus: "SUCCESS",
-  appleTreeResult: { /* AppleTree postPayment result */ }
+  postPaymentResult: { /* AppleTree PostPayment response */ },
+  paymentStatus: "SUCCESS"
 }
 ```
 
@@ -606,13 +605,13 @@ function PaymentComponent() {
 
       // Execute payment flow
       const result = await flowManager.executePayment(paymentData, {
-        postToAppleTree: false,  // Set to true to enable PostPayment
         userInfo: userInfo || userData?.userInfo || null
       });
 
       console.log('Payment successful!');
       console.log('Cashier Result:', result.cashierResult);
       console.log('Transaction ID:', result.transactionId);
+      console.log('PostPayment Result:', result.postPaymentResult);
       
       // Navigate to confirmation page
       navigate('/confirmation', { state: { ...result, paymentData } });
@@ -676,13 +675,13 @@ async function processBillPayment() {
     // Step 3: Process payment (includes cashier)
     const flowManager = new BillPaymentFlowManager();
     const paymentResult = await flowManager.executePayment(paymentData, {
-      postToAppleTree: false,
       userInfo: userData.userInfo
     });
 
     console.log('Payment completed:', paymentResult);
     console.log('Cashier Result:', paymentResult.cashierResult);
     console.log('Transaction ID:', paymentResult.transactionId);
+    console.log('PostPayment Result:', paymentResult.postPaymentResult);
     
   } catch (error) {
     console.error('Error:', error);

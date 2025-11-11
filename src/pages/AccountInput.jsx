@@ -7,6 +7,7 @@ import { colors } from '../data/colors';
 import PageWrapper from '../components/PageWrapper';
 import { validatePayment } from '../../h5-automation-api/appletree';
 import AppleTreeGateway from '../../h5-automation-api/appletree/AppleTreeGateway';
+import { getDisplayIdentifierLabel } from '../utils/identifierLabel';
 
 const AccountInput = () => {
   const navigate = useNavigate();
@@ -55,7 +56,14 @@ const AccountInput = () => {
 
   // Get credit party identifier info from product
   const creditPartyIdentifier = product?.CreditPartyIdentifiers?.[0];
-  const fieldLabel = creditPartyIdentifier?.Title || 'Account Number';
+  const fieldLabel = getDisplayIdentifierLabel(
+    creditPartyIdentifier?.Title,
+    {
+      serviceName: service?.Name,
+      providerName: provider?.Name,
+      productName: product?.Name
+    }
+  );
   const fieldName = creditPartyIdentifier?.Name || 'AccountNumber';
 
   // Get customer details (should come from SuperApp SDK - window.payment.getUserInfo())
@@ -142,7 +150,7 @@ const AccountInput = () => {
           setValidationError(null); // Explicitly clear error
         } else {
           // Validation failed - show user-friendly message
-          setValidationError('Failed to validate account details.');
+          setValidationError(response.ResultMessage || 'Failed to validate account details.');
           setValidationData(null); // Clear any previous validation data
         }
         setValidating(false);
@@ -163,7 +171,8 @@ const AccountInput = () => {
           setValidationError('Network connection issue. Please check your internet connection and try again.');
         } else {
           // Validation failed - show user-friendly message (not technical details)
-          setValidationError('Failed to validate account details.');
+          const resultMessage = error?.debugInfo?.responseBody?.ResultMessage || error?.message;
+          setValidationError(resultMessage || 'Failed to validate account details.');
         }
         
         setValidationData(null);

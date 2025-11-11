@@ -59,10 +59,7 @@ async function processBillPayment() {
     console.log('📋 Payment Details:', paymentData);
 
     // Process payment with automatic status checking
-    const result = await flowManager.executePayment(paymentData, {
-      postToAppleTree: false, // Set to true to enable PostPayment API
-      userInfo: null // Optional: pass userInfo if available
-    });
+    const result = await flowManager.executePayment(paymentData);
 
     if (result.success) {
       console.log('✅ Payment processed successfully!');
@@ -71,12 +68,12 @@ async function processBillPayment() {
       console.log('📊 Payment Status:', result.paymentStatus);
       console.log('🏪 Cashier Result:', result.cashierResult);
       console.log('📈 Status Result:', result.statusResult);
+      console.log('🌳 PostPayment Result:', result.postPaymentResult);
 
       // Handle different status outcomes
       switch (result.paymentStatus) {
         case ORDER_STATUS.SUCCESS:
           console.log('🎉 Payment completed successfully!');
-          // Proceed to show confirmation or call PostPayment
           break;
           
         case ORDER_STATUS.PROCESSING:
@@ -111,67 +108,6 @@ async function processBillPayment() {
   }
 }
 
-// Example with PostPayment (AppleTree integration)
-async function processBillPaymentWithPostPayment() {
-  try {
-    const flowManager = new BillPaymentFlowManager((type, message, data) => {
-      console.log(`[${type.toUpperCase()}] ${message}`, data || '');
-    });
-
-    const paymentData = {
-      country: {
-        countryCode: 'ZW',
-        countryName: 'Zimbabwe'
-      },
-      service: {
-        Id: '6',
-        Name: 'Electricity'
-      },
-      provider: {
-        Id: 'PRV_ZETDC',
-        Name: 'ZETDC'
-      },
-      product: {
-        Id: 'PN_TEST_ZETDC',
-        Name: 'ZETDC Prepaid Electricity',
-        Currency: 'USD'
-      },
-      accountValue: '1234567890',
-      amount: 10.00,
-      validationData: {
-        Status: 'VALIDATED',
-        DisplayData: [
-          { Label: 'Account Name', Value: 'John Doe' }
-        ]
-      }
-    };
-
-    const userInfo = {
-      CustomerId: 'user123',
-      Fullname: 'John Doe',
-      MobileNumber: '+263777077921',
-      EmailAddress: 'john@example.com'
-    };
-
-    // Execute payment WITH PostPayment API call
-    const result = await flowManager.executePayment(paymentData, {
-      postToAppleTree: true, // Enable PostPayment
-      userInfo: userInfo
-    });
-
-    if (result.success && result.appleTreeResult) {
-      console.log('✅ Payment and fulfillment completed!');
-      console.log('🌳 AppleTree Result:', result.appleTreeResult);
-      console.log('📄 Receipt HTML:', result.appleTreeResult.receiptHTML);
-      console.log('🎫 Vouchers:', result.appleTreeResult.vouchers);
-      console.log('📊 Display Data:', result.appleTreeResult.displayData);
-    }
-
-  } catch (error) {
-    console.error('💥 Payment process error:', error);
-  }
-}
-
 // Export for use in other modules
-export { processBillPayment, processBillPaymentWithPostPayment };
+export { processBillPayment };
 

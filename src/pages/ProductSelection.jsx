@@ -6,6 +6,7 @@ import Button from '../components/Button';
 import PageWrapper from '../components/PageWrapper';
 import { getProducts } from '../../h5-automation-api/appletree';
 import { colors } from '../data/colors';
+import { getDisplayIdentifierLabel } from '../utils/identifierLabel';
 
 const ProductSelection = () => {
   const navigate = useNavigate();
@@ -190,7 +191,14 @@ const ProductSelection = () => {
                   const hasAmountLimits = minAmount > 0 || maxAmount > 0;
                   
                   // Get account identifier needed (what user needs to provide)
-                  const accountIdentifier = product.CreditPartyIdentifiers?.[0]?.Title || 'Account Number';
+                  const accountIdentifier = getDisplayIdentifierLabel(
+                    product.CreditPartyIdentifiers?.[0]?.Title,
+                    {
+                      serviceName: service?.Name,
+                      providerName: provider?.Name,
+                      productName: product?.Name
+                    }
+                  );
                   
                   return (
                     <div

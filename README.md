@@ -46,8 +46,7 @@ A React-based mini-app for bill payments, integrated with the SuperApp SDK and A
 ├── h5-automation-api/      # API integration layer
 │   ├── appletree/          # AppleTree Gateway API
 │   │   ├── AppleTreeGateway.js
-│   │   ├── appleTreeService.js
-│   │   └── postPayment.js
+│   │   └── appleTreeService.js
 │   └── superapp/           # SuperApp SDK integration
 │       ├── BillPaymentFlowManager.js
 │       ├── SuperAppPayment.js

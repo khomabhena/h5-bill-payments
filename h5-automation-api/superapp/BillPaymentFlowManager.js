@@ -1,7 +1,6 @@
 import SuperAppPayment from './SuperAppPayment.js';
 import { ORDER_STATUS } from './statusService.js';
-import AppleTreeGateway from '../appletree/AppleTreeGateway.js';
-import PostPayment from '../appletree/postPayment.js';
+import { submitPostPayment } from '../appletree/appleTreeService.js';
 
 /**
  * BillPaymentFlowManager - Orchestrates the complete bill payment flow
@@ -12,8 +11,6 @@ class BillPaymentFlowManager {
   constructor(logCallback = null) {
     this.logCallback = logCallback || (() => {});
     this.superApp = null;
-    this.appleTreeGateway = null;
-    this.postPaymentService = null;
   }
 
   /**
@@ -67,21 +64,6 @@ class BillPaymentFlowManager {
         serialNo: 'ms8I46zJeW'
       });
       this.log('success', '✅ SuperAppPayment initialized');
-
-      // Initialize AppleTree Gateway for PostPayment
-      this.appleTreeGateway = new AppleTreeGateway({
-        merchantId: '23de4621-ea24-433f-9b45-dc1e383d8c2b',
-        baseUrl: 'https://sandbox-dev.appletreepayments.com',
-        apiVersion: 'V2'
-      });
-
-      // Initialize PostPayment service
-      // Note: PostPayment endpoint uses /billpayments/v2/postpayment path (different from other VAS endpoints)
-      // Using the same baseUrl but with billpayments path as per Postman collection
-      const postPaymentBaseUrl = 'https://sandbox-apg.azurewebsites.net'; // Different base URL for PostPayment
-      const postPaymentUrl = `${postPaymentBaseUrl}/billpayments/v2/postpayment`;
-      this.postPaymentService = new PostPayment(postPaymentUrl, this.appleTreeGateway.merchantId);
-      this.log('success', '✅ AppleTree Gateway and PostPayment service initialized');
 
       return this.superApp;
     } catch (initError) {
@@ -196,59 +178,6 @@ class BillPaymentFlowManager {
     }
     
     return orderData;
-  }
-
-  /**
-   * Build PostPayment payload for AppleTree Gateway
-   */
-  buildPostPaymentPayload(paymentData, transactionId, userInfo = null) {
-    const { product, accountValue, amount, validationData } = paymentData;
-
-    // Get credit party identifier info from product
-    const creditPartyIdentifier = product?.CreditPartyIdentifiers?.[0];
-    const identifierFieldName = creditPartyIdentifier?.Name || 'AccountNumber';
-
-    // Get customer details from userInfo or use defaults
-    const customerDetails = userInfo ? {
-      CustomerId: userInfo.CustomerId || userInfo.openId || '1L',
-      Fullname: userInfo.Fullname || userInfo.userInfo?.msisdn || '1L',
-      MobileNumber: userInfo.MobileNumber || userInfo.phoneNumber || userInfo.userInfo?.msisdn || '+263777077921',
-      EmailAddress: userInfo.EmailAddress || null
-    } : {
-      CustomerId: '1L',
-      Fullname: '1L',
-      MobileNumber: '+263777077921',
-      EmailAddress: null
-    };
-
-    // Generate new RequestId for PostPayment (must be unique UUID)
-    const requestId = AppleTreeGateway.generateRequestId();
-
-    const payload = {
-      RequestId: requestId,
-      PaymentChannel: 'SuperApp',
-      PaymentReferenceNumber: transactionId || 'N/A', // From SuperApp payment
-      ProductId: product?.Id,
-      BillReferenceNumber: null, // Optional, can be null
-      Quantity: '1', // String format as per API spec
-      Currency: product?.Currency || 'USD',
-      Amount: amount,
-      CustomerDetails: customerDetails,
-      CreditPartyIdentifiers: [
-        {
-          IdentifierFieldName: identifierFieldName,
-          IdentifierFieldValue: accountValue
-        }
-      ],
-      POSDetails: {
-        StoreId: 'SuperApp',
-        TerminalId: 'SuperApp',
-        CashierId: 'SuperApp'
-      }
-    };
-
-    this.log('data', '📦 PostPayment Payload', payload);
-    return payload;
   }
 
   /**
@@ -411,172 +340,194 @@ class BillPaymentFlowManager {
   }
 
   /**
-   * Step 4: Post payment to AppleTree (for bill payment fulfillment)
-   * Only called if payment status is SUCCESS
+   * Build the payload required for AppleTree PostPayment
    */
-  async postPaymentToAppleTree(transactionId, paymentData, userInfo = null) {
-    try {
-      // Only proceed if PostPayment service is initialized
-      if (!this.postPaymentService) {
-        this.log('info', 'ℹ️ PostPayment service not initialized, skipping postPayment');
-        return null;
-      }
+  buildPostPaymentPayload(paymentData, transactionId, validationData, userInfo = null) {
+    const { product, accountValue, amount } = paymentData;
+    const requestId = validationData?.RequestId || validationData?.requestId || null;
 
-      this.log('info', '🌳 Step 4: Posting payment to AppleTree for bill payment fulfillment...');
-      
-      const maxRetries = 5;
-      const retryDelay = 3000; // 3 seconds in milliseconds
-      let lastResult = null;
-      
-      // Attempt payment with retries
-      for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        this.log('info', `🔄 AppleTree postPayment attempt ${attempt} of ${maxRetries}...`);
-        
-        // Build the payload for bill payments
-        // IMPORTANT: Always generate a NEW unique RequestId for each call
-        // Each payment attempt (including retries) must have a unique RequestId.
-        const payload = this.buildPostPaymentPayload(paymentData, transactionId, userInfo);
-        
-        // Log the generated RequestId for this attempt
-        this.log('info', `🔑 Generated new RequestId for attempt ${attempt}:`, payload.RequestId);
-        
-        if (attempt === 1) {
-          this.log('data', '📦 AppleTree PostPayment Payload', payload);
-        }
-        
-        try {
-          // Post payment to AppleTree
-          const appleTreeResult = await this.postPaymentService.postPayment(payload);
-          lastResult = appleTreeResult;
+    const creditPartyIdentifier = product?.CreditPartyIdentifiers?.[0] || {};
+    const identifierFieldName =
+      creditPartyIdentifier?.IdentifierFieldName ||
+      creditPartyIdentifier?.Name ||
+      creditPartyIdentifier?.FieldName ||
+      'AccountNumber';
 
-          // Check if result is successful
-          const isSuccess = appleTreeResult.Status === 'SUCCESSFUL';
-          const isFailedRepeatable = appleTreeResult.Status === 'FAILEDREPEATABLE' || 
-                                     appleTreeResult.Status === 'PROCESSING';
-          
-          // Log result based on status
-          if (isSuccess) {
-            this.log('success', `✅ AppleTree postPayment completed successfully on attempt ${attempt}`, {
-              status: appleTreeResult.Status,
-              referenceNumber: appleTreeResult.ReferenceNumber,
-              requestId: appleTreeResult.RequestId,
-              hasDisplayData: !!appleTreeResult.DisplayData,
-              hasReceiptHTML: !!appleTreeResult.ReceiptHTML,
-              hasReceiptSmses: !!appleTreeResult.ReceiptSmses
-            });
-            const sanitizedResponse = { ...appleTreeResult };
-            if (sanitizedResponse._debugInfo) {
-              delete sanitizedResponse._debugInfo.responseBody;
-            }
-            return {
-              ...sanitizedResponse,
-              success: true,
-              status: appleTreeResult.Status,
-              referenceNumber: appleTreeResult.ReferenceNumber,
-              requestId: appleTreeResult.RequestId,
-              displayData: appleTreeResult.DisplayData || [],
-              vouchers: appleTreeResult.Vouchers || [],
-              receiptHTML: appleTreeResult.ReceiptHTML || [],
-              receiptSmses: appleTreeResult.ReceiptSmses || [],
-              resultMessage: appleTreeResult.ResultMessage,
-              _requestPayload: appleTreeResult._debugInfo?.payload || payload
-            }; // Success - return immediately
-          } else if (isFailedRepeatable) {
-            // Failed but repeatable - retry if attempts remain
-            this.log('warning', `⚠️ AppleTree postPayment failed (repeatable) on attempt ${attempt}`, {
-              status: appleTreeResult.Status,
-              message: appleTreeResult.ResultMessage,
-              requestId: appleTreeResult.RequestId,
-              attemptsRemaining: maxRetries - attempt
-            });
-            
-            // If this is not the last attempt, wait before retrying
-            if (attempt < maxRetries) {
-              this.log('info', `⏳ Waiting ${retryDelay / 1000} seconds before retry...`);
-              await new Promise(resolve => setTimeout(resolve, retryDelay));
-            } else {
-              this.log('error', `❌ AppleTree postPayment failed after ${maxRetries} attempts (all repeatable)`, {
-                status: appleTreeResult.Status,
-                message: appleTreeResult.ResultMessage,
-                requestId: appleTreeResult.RequestId
-              });
-            }
-          } else {
-            // Failed and not repeatable - don't retry
-            this.log('error', `❌ AppleTree postPayment failed (non-repeatable) on attempt ${attempt}`, {
-              status: appleTreeResult.Status,
-              message: appleTreeResult.ResultMessage || appleTreeResult.error,
-              requestId: appleTreeResult.RequestId
-            });
-            const sanitizedResponse = { ...appleTreeResult };
-            if (sanitizedResponse._debugInfo) {
-              delete sanitizedResponse._debugInfo.responseBody;
-            }
-            return {
-              ...sanitizedResponse,
-              success: false,
-              status: appleTreeResult.Status,
-              resultMessage: appleTreeResult.ResultMessage,
-              requestId: appleTreeResult.RequestId,
-              isFailedRepeatable: false,
-              _requestPayload: appleTreeResult._debugInfo?.payload || payload
-            }; // Return immediately for non-repeatable failures
-          }
-        } catch (postError) {
-          // Network or parsing error - treat as repeatable
-          this.log('warning', `⚠️ AppleTree postPayment error (repeatable) on attempt ${attempt}`, {
-            error: postError.message,
-            attemptsRemaining: maxRetries - attempt
-          });
-          
-          if (attempt < maxRetries) {
-            this.log('info', `⏳ Waiting ${retryDelay / 1000} seconds before retry...`);
-            await new Promise(resolve => setTimeout(resolve, retryDelay));
-          } else {
-            this.log('error', `❌ AppleTree postPayment failed after ${maxRetries} attempts (all errors)`, {
-              error: postError.message
-            });
-          }
+    const currencyCode = (
+      validationData?.Currency ||
+      product?.Currency ||
+      paymentData?.currency ||
+      'USD'
+    )
+      .toString()
+      .toUpperCase();
+
+    const deriveAccountNameFromDisplay = () => {
+      if (validationData?.DisplayData) {
+        const nameEntry = validationData.DisplayData.find((item = {}) => {
+          const label = item.Label?.toLowerCase() || '';
+          return label.includes('name');
+        });
+        if (nameEntry?.Value) {
+          return nameEntry.Value;
         }
       }
-      
-      // All retries exhausted - return last result
-      if (lastResult) {
-        const sanitizedLast = { ...lastResult };
-        if (sanitizedLast._debugInfo) {
-          delete sanitizedLast._debugInfo.responseBody;
+      return accountValue || 'Customer';
+    };
+
+    const fullName =
+      userInfo?.Fullname ||
+      userInfo?.FullName ||
+      userInfo?.userInfo?.fullName ||
+      userInfo?.userInfo?.name ||
+      deriveAccountNameFromDisplay();
+
+    const customerDetails = {
+      CustomerId:
+        userInfo?.CustomerId ||
+        userInfo?.openId ||
+        userInfo?.userInfo?.userId ||
+        userInfo?.userInfo?.id ||
+        '1L',
+      FullName: fullName,
+      Fullname: fullName,
+      MobileNumber:
+        userInfo?.MobileNumber ||
+        userInfo?.phoneNumber ||
+        userInfo?.userInfo?.msisdn ||
+        userInfo?.userInfo?.phoneNumber ||
+        userInfo?.userInfo?.phone ||
+        '+263777077921',
+      EmailAddress:
+        userInfo?.EmailAddress ||
+        userInfo?.userInfo?.email ||
+        userInfo?.userInfo?.emailAddress ||
+        null
+    };
+
+    const posDetails = {
+      CashierId: validationData?.POSDetails?.CashierId || '1L',
+      StoreId: validationData?.POSDetails?.StoreId || '1L',
+      TerminalId: validationData?.POSDetails?.TerminalId || '1L'
+    };
+
+    return {
+      RequestId: requestId,
+      ProductId: product?.Id,
+      BillReferenceNumber:
+        validationData?.BillReferenceNumber ??
+        validationData?.billReferenceNumber ??
+        null,
+      PaymentChannel: 'Mobile',
+      PaymentReferenceNumber: transactionId || 'N/A',
+      Quantity: '1',
+      Currency: currencyCode,
+      Amount: typeof amount === 'number' ? amount : Number(amount) || 0,
+      CustomerDetails: customerDetails,
+      CreditPartyIdentifiers: [
+        {
+          IdentifierFieldName: identifierFieldName,
+          IdentifierFieldValue:
+            accountValue !== undefined && accountValue !== null
+              ? String(accountValue)
+              : null
         }
+      ],
+      POSDetails: posDetails
+    };
+  }
 
-        return {
-          ...sanitizedLast,
-          success: false,
-          status: lastResult.Status,
-          resultMessage: lastResult.ResultMessage,
-          requestId: lastResult.RequestId,
-          isFailedRepeatable: lastResult.Status === 'FAILEDREPEATABLE' || lastResult.Status === 'PROCESSING',
-          _requestPayload: lastResult._debugInfo?.payload
-        };
-      }
-
-      return {
-        error: 'All retry attempts failed',
-        success: false,
-        isFailedRepeatable: true
-      };
-    } catch (error) {
-      this.log('error', '❌ Failed to post payment to AppleTree (non-critical)', {
-        message: error.message || 'Unknown error',
-        name: error.name || 'Error',
-        stack: error.stack || 'No stack trace available'
+  /**
+   * Post payment to AppleTree: requires prior validation (VALIDATED status)
+   */
+  async postPaymentToAppleTree(transactionId, paymentData, validationData, userInfo = null) {
+    if (!validationData || validationData.Status !== 'VALIDATED') {
+      this.log('info', 'ℹ️ Validation not successful or missing; skipping AppleTree PostPayment.', {
+        validationStatus: validationData?.Status
       });
-      // Don't throw - AppleTree postPayment is non-critical for payment completion
-      return { error: error.message, success: false };
+      return null;
+    }
+
+    if (!validationData.RequestId && !validationData.requestId) {
+      this.log('error', '⚠️ Validation response missing RequestId; cannot post payment.', validationData);
+      return {
+        success: false,
+        status: 'MISSING_REQUEST_ID',
+        resultMessage: 'Validation response missing RequestId.',
+        _requestPayload: null
+      };
+    }
+
+    const payload = this.buildPostPaymentPayload(paymentData, transactionId, validationData, userInfo);
+
+    this.log('info', '🌳 Step 4: Posting payment to AppleTree for fulfillment...', {
+      requestId: payload.RequestId,
+      productId: payload.ProductId
+    });
+    this.log('data', '📦 AppleTree PostPayment Payload', payload);
+
+    try {
+      const response = await submitPostPayment(payload);
+      const status = response?.Status || response?.status;
+      const normalized = {
+        status,
+        resultMessage: response?.ResultMessage || response?.ResultInformation || null,
+        referenceNumber: response?.ReferenceNumber || null,
+        requestId: response?.RequestId || payload.RequestId,
+        displayData: response?.DisplayData || [],
+        vouchers: response?.Vouchers || [],
+        receiptHTML: response?.ReceiptHTML || [],
+        receiptSmses: response?.ReceiptSmses || [],
+        success: status === 'SUCCESSFUL',
+        isFailedRepeatable: status === 'FAILEDREPEATABLE',
+        raw: response,
+        _requestPayload: payload
+      };
+
+      if (normalized.success) {
+        this.log('success', '✅ AppleTree PostPayment succeeded.', {
+          referenceNumber: normalized.referenceNumber,
+          requestId: normalized.requestId,
+          vouchers: normalized.vouchers.length,
+          receipts: normalized.receiptHTML.length
+        });
+      } else if (normalized.isFailedRepeatable) {
+        this.log('warning', '⚠️ AppleTree PostPayment returned FAILEDREPEATABLE.', {
+          requestId: normalized.requestId,
+          message: normalized.resultMessage
+        });
+      } else {
+        this.log('error', '❌ AppleTree PostPayment failed.', {
+          requestId: normalized.requestId,
+          message: normalized.resultMessage
+        });
+      }
+
+      return normalized;
+    } catch (error) {
+      this.log('error', '❌ AppleTree PostPayment error.', {
+        message: error?.message,
+        debug: error?.debugInfo
+      });
+      return {
+        success: false,
+        status: 'ERROR',
+        resultMessage: error?.message || 'PostPayment error',
+        requestId: payload.RequestId,
+        referenceNumber: null,
+        displayData: [],
+        vouchers: [],
+        receiptHTML: [],
+        receiptSmses: [],
+        error,
+        _requestPayload: payload
+      };
     }
   }
 
   /**
    * Main payment execution flow
-   * Orchestrates all steps: initialize → prepare → cashier → status → AppleTree postPayment
+   * Orchestrates all steps: initialize → prepare → cashier → status → PostPayment
    */
   async executePayment(paymentData, options = {}) {
     try {
@@ -607,21 +558,17 @@ class BillPaymentFlowManager {
       
       this.log('success', '✅ Payment completed successfully!');
       
-      // Step 4: Post payment to AppleTree if payment was successful (optional)
-      let appleTreeResult = null;
-      if (isPaymentSuccessful && options.postToAppleTree !== false) {
-        // Call callback if provided to notify that fulfillment is starting
-        if (options.onFulfillmentStart && typeof options.onFulfillmentStart === 'function') {
-          options.onFulfillmentStart();
-        }
-        
-        appleTreeResult = await this.postPaymentToAppleTree(
+      // Step 4: Post payment to AppleTree if payment was successful
+      let postPaymentResult = null;
+      if (isPaymentSuccessful) {
+        postPaymentResult = await this.postPaymentToAppleTree(
           paymentResult.outBizId,
           paymentData,
+          paymentData?.validationData,
           options.userInfo || null
         );
       }
-      
+
       // Return complete payment data
       return {
         success: true,
@@ -631,7 +578,7 @@ class BillPaymentFlowManager {
         cashierResult,
         statusResult,
         paymentResult,
-        appleTreeResult,
+        postPaymentResult,
         paymentStatus
       };
     } catch (error) {

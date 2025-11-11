@@ -28,7 +28,7 @@ const Confirmation = () => {
     accountValue, 
     amount, 
     validationData,
-    appleTreeResult
+    postPaymentResult
   } = location.state || {};
 
   const [copiedField, setCopiedField] = useState(null);
@@ -90,17 +90,16 @@ const Confirmation = () => {
   const accountName = getAccountName();
   const currency = product?.Currency || 'USD';
   const isPaymentSuccessful = success === true || paymentStatus === 'SUCCESS';
-
-  // Determine if AppleTree postPayment was successful (when implemented)
-  const appleTreeSuccess = appleTreeResult?.success === true;
-  const appleTreeStatus = appleTreeResult?.status;
-  const appleTreeReferenceNumber = appleTreeResult?.referenceNumber;
-  const appleTreeMessage = appleTreeResult?.resultMessage || appleTreeResult?.message;
-  const appleTreeDisplayData = appleTreeResult?.displayData || appleTreeResult?.DisplayData || [];
-  const vouchers = appleTreeResult?.vouchers || appleTreeResult?.Vouchers || [];
-  const receiptHTML = appleTreeResult?.receiptHTML || appleTreeResult?.ReceiptHTML || [];
-  const receiptSmses = appleTreeResult?.receiptSmses || appleTreeResult?.ReceiptSmses || [];
-  const appleTreeRequestId = appleTreeResult?.requestId || appleTreeResult?.RequestId;
+  const fulfillmentResult = postPaymentResult || null;
+  const fulfillmentStatus = fulfillmentResult?.status;
+  const fulfillmentSuccess = fulfillmentResult?.success === true;
+  const fulfillmentMessage = fulfillmentResult?.resultMessage;
+  const fulfillmentReferenceNumber = fulfillmentResult?.referenceNumber;
+  const fulfillmentRequestId = fulfillmentResult?.requestId;
+  const vouchers = fulfillmentResult?.vouchers || [];
+  const receiptHTML = fulfillmentResult?.receiptHTML || [];
+  const receiptSmses = fulfillmentResult?.receiptSmses || [];
+  const fulfillmentDisplayData = fulfillmentResult?.displayData || [];
 
   return (
     <PageWrapper>
@@ -140,31 +139,6 @@ const Confirmation = () => {
                       title="Copy Transaction ID"
                     >
                       {copiedField === 'transactionId' ? (
-                        <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      ) : (
-                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              )}
-              {appleTreeReferenceNumber && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Reference Number</span>
-                  <div className="flex items-center space-x-2">
-                    <span className="font-mono text-xs font-semibold" style={{color: colors.text.primary}}>
-                      {appleTreeReferenceNumber}
-                    </span>
-                    <button
-                      onClick={() => copyToClipboard(appleTreeReferenceNumber, 'referenceNumber')}
-                      className="p-1 rounded transition-colors hover:bg-gray-100"
-                      title="Copy Reference Number"
-                    >
-                      {copiedField === 'referenceNumber' ? (
                         <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
@@ -235,26 +209,19 @@ const Confirmation = () => {
             </div>
           </div>
 
-          {/* Payment Status / Delivery Status */}
-          {appleTreeResult && (
-            <div className={`rounded-lg p-4 border mb-6 ${
-              appleTreeSuccess 
-                ? '' 
-                : 'bg-yellow-50 border-yellow-200'
-            }`} style={
-              appleTreeSuccess 
-                ? {backgroundColor: colors.app.primaryDark, borderColor: colors.app.primary}
-                : {}
-            }>
-              <div className="flex items-center space-x-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  appleTreeSuccess 
-                    ? '' 
-                    : 'bg-yellow-500'
-                }`} style={
-                  appleTreeSuccess ? {backgroundColor: colors.app.primary} : {}
-                }>
-                  {appleTreeSuccess ? (
+          {/* Fulfillment Status */}
+          {fulfillmentResult && (
+            <div
+              className={`rounded-lg p-4 border mb-6 ${fulfillmentSuccess ? 'bg-emerald-600 text-white border-emerald-500' : 'bg-amber-50 border-amber-200 text-amber-900'}`}
+            >
+              <div className="flex items-start space-x-3">
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{
+                    backgroundColor: fulfillmentSuccess ? colors.app.primary : '#F59E0B'
+                  }}
+                >
+                  {fulfillmentSuccess ? (
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                     </svg>
@@ -265,25 +232,18 @@ const Confirmation = () => {
                   )}
                 </div>
                 <div className="flex-1">
-                  <p className={`font-semibold text-sm ${
-                    appleTreeSuccess ? 'text-white' : 'text-yellow-800'
-                  }`}>
-                    {appleTreeSuccess 
-                      ? 'Payment Fulfilled' 
-                      : 'Fulfillment Pending'}
+                  <p className={`font-semibold text-sm ${fulfillmentSuccess ? 'text-white' : 'text-amber-900'}`}>
+                    {fulfillmentSuccess ? 'Payment Fulfilled' : 'Fulfillment Pending'}
                   </p>
-                  <p className={`text-xs ${
-                    appleTreeSuccess ? 'text-gray-200' : 'text-yellow-700'
-                  }`}>
-                    {appleTreeSuccess 
-                      ? `Payment of ${formatCurrencyCode(amount || 0, currency)} has been processed for ${accountValue}`
-                      : appleTreeMessage || 'Payment is being processed. Please contact support if the issue persists'}
+                  <p className={`text-xs mt-1 ${fulfillmentSuccess ? 'text-gray-100' : 'text-amber-700'}`}>
+                    {fulfillmentMessage ||
+                      (fulfillmentSuccess
+                        ? `Payment of ${formatCurrencyCode(amount || 0, currency)} has been processed for ${accountValue}`
+                        : 'The biller has not yet confirmed this transaction. Please try again shortly.')}
                   </p>
-                  {appleTreeReferenceNumber && (
-                    <p className={`text-xs mt-1 ${
-                      appleTreeSuccess ? 'text-gray-300' : 'text-yellow-600'
-                    }`}>
-                      Reference: {appleTreeReferenceNumber}
+                  {fulfillmentReferenceNumber && (
+                    <p className={`text-xs mt-2 ${fulfillmentSuccess ? 'text-gray-200' : 'text-amber-700'}`}>
+                      Reference: {fulfillmentReferenceNumber}
                     </p>
                   )}
                 </div>
@@ -291,53 +251,50 @@ const Confirmation = () => {
             </div>
           )}
 
-          {/* PostPayment Debug Log */}
-          <div className="mb-6 rounded-xl border border-dashed border-emerald-300 bg-emerald-50/80 p-4">
-            <p className="text-xs font-semibold text-emerald-900 mb-2">AppleTree PostPayment Debug Log</p>
-            {appleTreeResult ? (
+          {/* Fulfillment Debug */}
+          {fulfillmentResult && (
+            <div className="mb-6 rounded-xl border border-dashed border-emerald-300 bg-emerald-50/80 p-4">
+              <p className="text-xs font-semibold text-emerald-900 mb-2">Fulfillment Debug</p>
               <div className="space-y-1 text-[11px] text-emerald-900">
-                <p><span className="font-semibold uppercase">Status:</span> {appleTreeResult.Status || 'N/A'}</p>
-                {appleTreeReferenceNumber && (
-                  <p><span className="font-semibold">Reference:</span> {appleTreeReferenceNumber}</p>
+                <p><span className="font-semibold uppercase">Status:</span> {fulfillmentStatus || 'N/A'}</p>
+                {fulfillmentReferenceNumber && (
+                  <p><span className="font-semibold">Reference:</span> {fulfillmentReferenceNumber}</p>
                 )}
-                {appleTreeRequestId && (
-                  <p><span className="font-semibold">RequestId:</span> {appleTreeRequestId}</p>
+                {fulfillmentRequestId && (
+                  <p><span className="font-semibold">RequestId:</span> {fulfillmentRequestId}</p>
                 )}
-                <p><span className="font-semibold">Result Message:</span> {appleTreeMessage || 'N/A'}</p>
-                <p><span className="font-semibold">Vouchers Returned:</span> {vouchers.length}</p>
-                <p><span className="font-semibold">Receipt HTML:</span> {receiptHTML.length}</p>
-                <p><span className="font-semibold">Receipt SMS:</span> {receiptSmses.length}</p>
-                {appleTreeResult._debugInfo?.payload && (
+                <p><span className="font-semibold">Result Message:</span> {fulfillmentMessage || 'N/A'}</p>
+                {fulfillmentResult?._requestPayload && (
                   <div className="mt-2">
                     <p className="font-semibold mb-1">Request Payload:</p>
                     <pre className="max-h-48 overflow-y-auto rounded-lg bg-white/90 p-2 text-[10px] text-emerald-900">
-                      {JSON.stringify(appleTreeResult._debugInfo.payload, null, 2)}
+                      {JSON.stringify(fulfillmentResult._requestPayload, null, 2)}
                     </pre>
                   </div>
                 )}
-                <div className="mt-2">
-                  <p className="font-semibold mb-1">Raw Response:</p>
-                  <pre className="max-h-48 overflow-y-auto rounded-lg bg-white/70 p-2 text-[10px] text-emerald-900">
-                    {JSON.stringify(appleTreeResult, null, 2)}
-                  </pre>
-                </div>
+                {fulfillmentResult?.raw && (
+                  <div className="mt-2">
+                    <p className="font-semibold mb-1">Raw Response:</p>
+                    <pre className="max-h-48 overflow-y-auto rounded-lg bg-white/70 p-2 text-[10px] text-emerald-900">
+                      {JSON.stringify(fulfillmentResult.raw, null, 2)}
+                    </pre>
+                  </div>
+                )}
               </div>
-            ) : (
-              <p className="text-[11px] text-emerald-900">No AppleTree PostPayment response was received for this payment.</p>
-            )}
-          </div>
+            </div>
+          )}
 
-          {/* AppleTree Display Data */}
-          {appleTreeDisplayData && appleTreeDisplayData.length > 0 && (
+          {/* Fulfillment Display Data */}
+          {fulfillmentDisplayData.length > 0 && (
             <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
-              <h3 className="font-bold text-sm text-emerald-800 mb-3">Fulfillment Details</h3>
+              <h3 className="font-bold text-sm text-emerald-800 mb-3">Voucher Details</h3>
               <div className="space-y-2">
-                {appleTreeDisplayData.map((item, index) => {
+                {fulfillmentDisplayData.map((item, index) => {
                   if (!item.Value || item.Value.trim() === '') {
                     return null;
                   }
                   return (
-                    <div key={`apple-tree-display-${index}`} className="flex flex-col">
+                    <div key={`fulfillment-display-${index}`} className="flex flex-col">
                       <span className="text-xs font-medium text-gray-600 mb-1">{item.Label}</span>
                       <span className="text-sm text-gray-800 whitespace-pre-line">{item.Value}</span>
                     </div>
@@ -347,25 +304,28 @@ const Confirmation = () => {
             </div>
           )}
 
-          {/* Vouchers Display */}
-          {vouchers && vouchers.length > 0 && (
-            <div className="mt-6 bg-white rounded-xl shadow-md p-4 border" style={{borderColor: colors.border.primary}}>
-              <h3 className="font-bold mb-3 text-sm" style={{color: colors.text.primary}}>Voucher Details</h3>
+          {/* Vouchers */}
+          {vouchers.length > 0 && (
+            <div className="mt-6 bg-white rounded-xl shadow-md p-4 border" style={{ borderColor: colors.border.primary }}>
+              <h3 className="font-bold mb-3 text-sm" style={{ color: colors.text.primary }}>Voucher Tokens</h3>
               <div className="space-y-3">
                 {vouchers.map((voucher, index) => {
-                  const voucherKey = `voucher-${index}`;
-                  const serialKey = `${voucherKey}-serial`;
-                  const codeKey = `${voucherKey}-code`;
                   const expiryDate = voucher.ExpiryDate ? new Date(voucher.ExpiryDate) : null;
-                  const daysUntilExpiry = expiryDate ? Math.ceil((expiryDate - new Date()) / (1000 * 60 * 60 * 24)) : null;
+                  const daysUntilExpiry = expiryDate
+                    ? Math.ceil((expiryDate - new Date()) / (1000 * 60 * 60 * 24))
+                    : null;
 
                   return (
-                    <div key={voucherKey} className="rounded-lg p-4 border" style={{
-                      background: `linear-gradient(to bottom right, ${colors.background.secondary}, ${colors.app.primary})`,
-                      borderColor: colors.border.primary
-                    }}>
+                    <div
+                      key={`voucher-${index}`}
+                      className="rounded-lg p-4 border"
+                      style={{
+                        background: `linear-gradient(to bottom right, ${colors.background.secondary}, ${colors.app.primary})`,
+                        borderColor: colors.border.primary
+                      }}
+                    >
                       <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-bold text-sm" style={{color: colors.text.primary}}>Voucher #{index + 1}</h4>
+                        <h4 className="font-bold text-sm" style={{ color: colors.text.primary }}>Token #{index + 1}</h4>
                         {vouchers.length > 1 && (
                           <span className="text-xs px-2 py-1 rounded-full" style={{
                             backgroundColor: colors.state.successLight,
@@ -378,28 +338,8 @@ const Confirmation = () => {
 
                       {voucher.SerialNumber && (
                         <div className="mb-3">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs font-medium" style={{color: colors.text.secondary}}>Serial Number</span>
-                            <button
-                              onClick={() => copyToClipboard(voucher.SerialNumber, serialKey)}
-                              className="p-1 rounded transition-colors"
-                              style={{backgroundColor: 'transparent'}}
-                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.background.secondary}
-                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                              title="Copy Serial Number"
-                            >
-                              {copiedField === serialKey ? (
-                                <svg className="w-4 h-4" style={{color: colors.state.success}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                </svg>
-                              ) : (
-                                <svg className="w-4 h-4" style={{color: colors.text.secondary}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                </svg>
-                              )}
-                            </button>
-                          </div>
-                          <p className="font-mono font-bold text-sm bg-white px-3 py-2 rounded border" style={{borderColor: colors.border.primary, color: colors.text.primary}}>
+                          <span className="text-xs font-medium" style={{ color: colors.text.secondary }}>Serial Number</span>
+                          <p className="font-mono font-semibold text-sm bg-white px-3 py-2 rounded border mt-1" style={{ borderColor: colors.border.primary }}>
                             {voucher.SerialNumber}
                           </p>
                         </div>
@@ -407,43 +347,23 @@ const Confirmation = () => {
 
                       {voucher.VoucherCode && (
                         <div className="mb-3">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs font-medium" style={{color: colors.text.secondary}}>Voucher Code</span>
-                            <button
-                              onClick={() => copyToClipboard(voucher.VoucherCode, codeKey)}
-                              className="p-1 rounded transition-colors"
-                              style={{backgroundColor: 'transparent'}}
-                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.background.secondary}
-                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                              title="Copy Voucher Code"
-                            >
-                              {copiedField === codeKey ? (
-                                <svg className="w-4 h-4" style={{color: colors.state.success}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                </svg>
-                              ) : (
-                                <svg className="w-4 h-4" style={{color: colors.text.secondary}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                </svg>
-                              )}
-                            </button>
-                          </div>
-                          <p className="font-mono font-bold text-base bg-white px-3 py-2 rounded border break-all text-center" style={{color: colors.app.primaryDark, borderColor: colors.border.secondary}}>
+                          <span className="text-xs font-medium" style={{ color: colors.text.secondary }}>Token</span>
+                          <p className="font-mono font-semibold text-base bg-white px-3 py-2 rounded border mt-1 break-all text-center" style={{ color: colors.app.primaryDark, borderColor: colors.border.secondary }}>
                             {voucher.VoucherCode}
                           </p>
                         </div>
                       )}
 
                       <div className="grid grid-cols-2 gap-2 text-xs">
-                        {voucher.ValidDays && (
-                          <div className="bg-white rounded px-2 py-1 border" style={{borderColor: colors.border.primary}}>
-                            <span style={{color: colors.text.secondary}}>Valid for:</span>
-                            <span className="font-semibold ml-1" style={{color: colors.text.primary}}>{voucher.ValidDays} days</span>
+                        {voucher.ValidDays !== undefined && (
+                          <div className="bg-white rounded px-2 py-1 border" style={{ borderColor: colors.border.primary }}>
+                            <span style={{ color: colors.text.secondary }}>Valid For:</span>
+                            <span className="font-semibold ml-1" style={{ color: colors.text.primary }}>{voucher.ValidDays} days</span>
                           </div>
                         )}
                         {expiryDate && (
-                          <div className="bg-white rounded px-2 py-1 border" style={{borderColor: colors.border.primary}}>
-                            <span style={{color: colors.text.secondary}}>Expires:</span>
+                          <div className="bg-white rounded px-2 py-1 border" style={{ borderColor: colors.border.primary }}>
+                            <span style={{ color: colors.text.secondary }}>Expires:</span>
                             <span className="font-semibold ml-1" style={{
                               color: daysUntilExpiry !== null && daysUntilExpiry < 7 ? colors.state.error : colors.text.primary
                             }}>
@@ -452,24 +372,6 @@ const Confirmation = () => {
                           </div>
                         )}
                       </div>
-
-                      {daysUntilExpiry !== null && daysUntilExpiry >= 0 && (
-                        <div className="mt-2 text-xs text-center">
-                          <span className="font-medium" style={{
-                            color: daysUntilExpiry < 7 
-                              ? colors.state.error 
-                              : daysUntilExpiry < 30 
-                                ? colors.state.warning 
-                                : colors.state.success
-                          }}>
-                            {daysUntilExpiry === 0 
-                              ? 'Expires today' 
-                              : daysUntilExpiry === 1 
-                                ? 'Expires tomorrow'
-                                : `Expires in ${daysUntilExpiry} days`}
-                          </span>
-                        </div>
-                      )}
                     </div>
                   );
                 })}
@@ -477,29 +379,35 @@ const Confirmation = () => {
             </div>
           )}
 
-          {/* Receipt HTML Display */}
-          {receiptHTML && receiptHTML.length > 0 && (
-            <div className="mt-6 bg-white rounded-xl shadow-md p-4 border" style={{borderColor: colors.border.secondary}}>
-              <h3 className="font-bold mb-3 text-sm" style={{color: colors.text.primary}}>Receipt</h3>
-              <div className="space-y-4">
+          {/* Receipt HTML */}
+          {receiptHTML.length > 0 && (
+            <div className="mt-6 bg-white rounded-xl shadow-md p-4 border border-emerald-200">
+              <h3 className="font-bold mb-3 text-sm text-emerald-800">Receipt</h3>
+              <div className="space-y-3">
                 {receiptHTML.map((html, index) => (
-                  <div key={`receipt-${index}`} className="border rounded-lg p-4 bg-gray-50" style={{borderColor: colors.border.primary}}>
-                    <div dangerouslySetInnerHTML={{ __html: html }} />
+                  <div key={`receipt-${index}`} className="rounded-lg border border-emerald-100 overflow-hidden">
+                    <div className="px-3 py-2 bg-emerald-600 text-white flex items-center justify-between text-xs">
+                      <span>Receipt #{index + 1}</span>
+                      <span>{new Date().toLocaleString()}</span>
+                    </div>
+                    <div className="bg-white p-3 max-h-80 overflow-y-auto text-[11px] text-gray-800">
+                      <div dangerouslySetInnerHTML={{ __html: html }} />
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Receipt SMS Display */}
-          {receiptSmses && receiptSmses.length > 0 && (
-            <div className="mt-6 bg-white rounded-xl shadow-md p-4 border" style={{borderColor: colors.border.secondary}}>
-              <h3 className="font-bold mb-3 text-sm" style={{color: colors.text.primary}}>Receipt SMS</h3>
+          {/* Receipt SMS */}
+          {receiptSmses.length > 0 && (
+            <div className="mt-6 bg-white rounded-xl shadow-md p-4 border border-emerald-200">
+              <h3 className="font-bold mb-3 text-sm text-emerald-800">Receipt SMS</h3>
               <div className="space-y-2">
                 {receiptSmses.map((sms, index) => (
-                  <div key={`sms-${index}`} className="p-3 bg-gray-50 rounded border" style={{borderColor: colors.border.primary}}>
-                    <p className="text-xs text-gray-600 mb-1">Message #{index + 1}</p>
-                    <p className="text-sm text-gray-800 whitespace-pre-line">{sms}</p>
+                  <div key={`sms-${index}`} className="text-xs text-gray-700 bg-emerald-50 border border-emerald-100 rounded-lg p-3">
+                    <p className="font-semibold mb-1">Message #{index + 1}</p>
+                    <p>{sms}</p>
                   </div>
                 ))}
               </div>

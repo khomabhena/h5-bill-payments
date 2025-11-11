@@ -6,7 +6,15 @@
  */
 
 export { default as AppleTreeGateway } from './AppleTreeGateway.js';
-export { default as PostPayment } from './postPayment.js';
+export {
+  getCountries,
+  getServices,
+  getServiceProviders,
+  getProducts,
+  getProductById,
+  validatePayment,
+  submitPostPayment
+} from './appleTreeService.js';
 export { Services } from './AppleTreeGateway.js';
 export * from './appleTreeService.js';
 
