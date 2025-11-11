@@ -15,6 +15,7 @@ export const getDisplayIdentifierLabel = (
 
   const looksLikeMobileNumber =
     normalizedLabel === 'mobile number' ||
+    normalizedLabel === 'phone number' ||
     normalizedLabel === 'mobile #' ||
     normalizedLabel === 'msisdn' ||
     normalizedLabel === 'mssdn' ||
