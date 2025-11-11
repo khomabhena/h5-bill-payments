@@ -17,6 +17,7 @@ export const getDisplayIdentifierLabel = (
     normalizedLabel === 'mobile number' ||
     normalizedLabel === 'mobile #' ||
     normalizedLabel === 'msisdn' ||
+    normalizedLabel === 'mssdn' ||
     normalizedLabel === 'mobile';
 
   if (isElectricityContext && looksLikeMobileNumber) {
